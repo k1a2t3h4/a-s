@@ -1,0 +1,20 @@
+---
+import App from '../components/App';
+import Layout from '../layouts/Layout.astro';
+
+export function getStaticPaths() {
+	return [
+		{ params: { slug: undefined } },
+		{ params: { slug: 'about' } },
+		{ params: { slug: 'products' } },
+		{ params: { slug: 'contact' } },
+	];
+}
+
+const slug = Astro.params.slug as string | undefined;
+const pathname = slug ? `/${slug}` : '/';
+---
+
+<Layout>
+	<App client:load initialPath={pathname} />
+</Layout>
