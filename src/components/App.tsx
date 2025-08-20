@@ -3,6 +3,7 @@ import { Router, Route } from '@solidjs/router';
 import { AuthProvider } from './contexts/AuthContext';
 import { lazy, Suspense } from 'solid-js';
 import PageNavigater from './pagenavigater';
+import { AppProvider } from './lib/state';
 
 interface AppProps {
   initialPath?: string;
@@ -27,7 +28,11 @@ const App: Component<AppProps> = (props) => {
           <Route path="/login" component={LoginWithNav} />
           <Route path="/register" component={RegisterWithNav} />
           <Route path="/contact" component={ContactWithNav} />
-          <Route path="/manage" component={Manage} />
+          <Route path="/manage" component={() => (
+            <AppProvider>
+              <Manage />
+            </AppProvider>
+          )} />
         </Router>
       </Suspense>
     </AuthProvider>

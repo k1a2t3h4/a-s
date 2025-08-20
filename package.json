@@ -11,9 +11,11 @@
   "dependencies": {
     "@astrojs/netlify": "^6.5.7",
     "@solidjs/router": "^0.15.3",
+    "@tailwindcss/vite": "^4.1.12",
     "astro": "^5.13.2",
     "lucide-solid": "^0.540.0",
-    "solid-js": "^1.9.9"
+    "solid-js": "^1.9.9",
+    "tailwindcss": "^4.1.12"
   },
   "devDependencies": {
     "@astrojs/solid-js": "^5.1.0"
