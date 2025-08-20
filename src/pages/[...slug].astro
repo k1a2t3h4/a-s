@@ -5,9 +5,9 @@ import Layout from '../layouts/Layout.astro';
 export function getStaticPaths() {
 	return [
 		{ params: { slug: undefined } },
-		{ params: { slug: 'about' } },
-		{ params: { slug: 'products' } },
-		{ params: { slug: 'contact' } },
+		{ params: { slug: 'login' } },
+		{ params: { slug: 'register' } },
+		{ params: { slug: 'manage' } },
 	];
 }
 
@@ -16,5 +16,5 @@ const pathname = slug ? `/${slug}` : '/';
 ---
 
 <Layout>
-	<App client:load initialPath={pathname} />
+	<App client:only="solid-js" initialPath={pathname} />
 </Layout>

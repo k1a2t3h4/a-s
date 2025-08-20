@@ -1,25 +1,29 @@
 import type { Component } from 'solid-js';
 import { Router, Route } from '@solidjs/router';
-
-import { lazy } from 'solid-js';
+import { AuthProvider } from './contexts/AuthContext';
+import { lazy, Suspense } from 'solid-js';
 
 interface AppProps {
   initialPath?: string;
 }
 const Home = lazy(() => import('./Home'));
-const About = lazy(() => import('./About'));
-const Products = lazy(() => import('./Products'));
-const Contact = lazy(() => import('./Contact'));
+const Login = lazy(() => import('./Login'));
+const Register = lazy(() => import('./Register'));
+const Manage = lazy(() => import('./Manage'));
+const NotFound = lazy(() => import('./NotFound'));
 const App: Component<AppProps> = (props) => {
   return (
-    <Router url={props.initialPath}>
+    <AuthProvider>
+      <Suspense fallback={<div>Loading...</div>}>
+      <Router url={props.initialPath}>
       <Route path="/" component={Home} />
-      <Route path="/about" component={About} />
-      <Route path="/products" component={Products} />
-      <Route path="/contact" component={Contact} />
-      {/* Catch-all route for any other paths */}
-      <Route path="*" component={Home} />
+      <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
+      <Route path="/manage" component={Manage} />
+      <Route path="*" component={NotFound} />
     </Router>
+    </Suspense>
+    </AuthProvider>
   );
 };
 
