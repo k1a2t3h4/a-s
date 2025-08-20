@@ -31,7 +31,7 @@ const Login = () => {
         sessionType() === "custom" ? Number(sessionValue()) : undefined;
       const success = await login(
         email(),
-        password(),
+        password(), 
         sessionType(),
         valueToSend
       );
