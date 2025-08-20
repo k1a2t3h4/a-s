@@ -15,7 +15,7 @@ const Login = () => {
   const location = useLocation();
 
   const state = location.state as { from?: { pathname?: string } } | undefined;
-  const from = state?.from?.pathname || "/";
+  const from = state?.from?.pathname || "/manage";
   // Redirect if already authenticated
   createEffect(() => {
     if (isAuthenticated() && !authLoading()) {
