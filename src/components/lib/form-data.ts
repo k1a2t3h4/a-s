@@ -789,15 +789,29 @@ export const addCategoryToStructure = (categoryPath: string, parentPath: string[
 };
 
 export const getAvailableTagsByProduct = (): string[] => {
-  const tags = localStorage.getItem('tagsByProduct')||'';
-  Object.assign(tagsByProduct, JSON.parse(tags));
+  try {
+    const tags = localStorage.getItem('tagsByProduct');
+    if (tags) {
+      Object.assign(tagsByProduct, JSON.parse(tags));
+    }
+  } catch (e) {
+    console.warn('Invalid tagsByProduct in localStorage; resetting');
+    localStorage.removeItem('tagsByProduct');
+  }
   return Object.keys(tagsByProduct);
 };
 
 // Get all available collections for suggestions
 export const getAvailableCollectionsByProduct = (): string[] => {
-  const collections = localStorage.getItem('collectionsByProduct')||'';
-  Object.assign(collectionsByProduct, JSON.parse(collections));
+  try {
+    const collections = localStorage.getItem('collectionsByProduct');
+    if (collections) {
+      Object.assign(collectionsByProduct, JSON.parse(collections));
+    }
+  } catch (e) {
+    console.warn('Invalid collectionsByProduct in localStorage; resetting');
+    localStorage.removeItem('collectionsByProduct');
+  }
   return Object.keys(collectionsByProduct);
 };
 
