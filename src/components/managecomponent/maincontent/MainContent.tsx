@@ -5,7 +5,7 @@ import { useAppState } from "../../lib/state";
 // import { Analytics } from "../analytics/Analytics";
 // import { PageBuilder } from "../builder/PageBuilder";
 // import { PagesManager } from "../pages/PagesManager";
-import { Products } from "./products/products";
+import { Products } from "./products/Products";
 // import { EmailMarketing } from "../email/EmailMarketing";
 // import { Settings } from "../settings/Settings";
 // import { Plugins } from "../plugins/Plugins";

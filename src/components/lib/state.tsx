@@ -2,7 +2,7 @@
 import type { JSX } from "solid-js";
 import { createContext, useContext, createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
-import { loadState, saveState } from "../contexts/storage";
+import { loadState, saveState } from "./storage";
 import { useAuth } from "../contexts/AuthContext";
 
 // --- Types ---

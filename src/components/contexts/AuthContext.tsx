@@ -1,6 +1,6 @@
 import { createContext, useContext, createSignal, onMount } from "solid-js";
 import type { JSX } from "solid-js";
-import { removeState } from "./storage";
+import { removeState } from "../lib/storage";
 
 interface WebsiteData {
   complete_unique_id: string;

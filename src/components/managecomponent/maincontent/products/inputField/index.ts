@@ -1,0 +1,15 @@
+export { ProductNameInput } from './ProductNameInput';
+// export { ProductDescriptionInput } from './ProductDescriptionInput';
+export { ProductIDInput } from './ProductIDInput';
+// export { ProductTemplateInput } from './ProductTemplateInput';
+// export { ProductStatusInput } from './ProductStatusInput';
+// export { ProductVendorInput } from './ProductVendorInput';
+// export { ProductAvailableLocationsInput } from './ProductAvailableLocationsInput';
+// export { ProductDeepCategoryInput } from './ProductDeepCategoryInput';
+// export { ProductGlobalMediaInput } from './ProductGlobalMediaInput';
+// export { ProductTagsInput } from './ProductTagsInput';
+// export { ProductCollectionsInput } from './ProductCollectionsInput';
+// export { ProductVariantsInput } from './ProductVariantsInput';
+// export { PhysicalProductFields } from './PhysicalProductFields';
+// export { ProductPricingInput } from './ProductPricingInput';
+// export { ProductInventoryInput } from './ProductInventoryInput';
