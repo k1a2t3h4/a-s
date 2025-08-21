@@ -15,6 +15,7 @@ import { ProductGlobalMediaInput } from "./inputField/ProductGlobalMediaInput";
 import { ProductTagsInput } from "./inputField/ProductTagsInput";
 import { ProductCollectionsInput } from "./inputField/ProductCollectionsInput";
 import { PhysicalProductFields } from "./inputField/PhysicalProductFields";
+import { ProductVariantsInput } from "./inputField/ProductVariantsInput";
 // import  {
 //   ProductIDInput,
 //   ProductNameInput,
@@ -76,7 +77,7 @@ export const ProductDetails: Component = () => {
             <ProductTagsInput />
             <ProductCollectionsInput />
             <PhysicalProductFields />
-            {/* <ProductVariantsInput /> */}
+            <ProductVariantsInput />
 
             <div class="flex flex-col sm:flex-row gap-3 pt-4">
               <button
