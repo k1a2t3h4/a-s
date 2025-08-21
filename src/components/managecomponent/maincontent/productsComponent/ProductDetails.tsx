@@ -9,6 +9,13 @@ import { ProductInventoryInput } from "./inputField/ProductInventoryInput";
 import { ProductTemplateInput } from "./inputField/ProductTemplateInput";
 import { ProductStatusInput } from "./inputField/ProductStatusInput";
 import { ProductVendorInput } from "./inputField/ProductVendorInput";
+import { ProductAvailableLocationsInput } from "./inputField/ProductAvailableLocationsInput";
+import { ProductDeepCategoryInput } from "./inputField/ProductDeepCategoryInput";
+import { ProductGlobalMediaInput } from "./inputField/ProductGlobalMediaInput";
+import { ProductTagsInput } from "./inputField/ProductTagsInput";
+import { ProductCollectionsInput } from "./inputField/ProductCollectionsInput";
+import { PhysicalProductFields } from "./inputField/PhysicalProductFields";
+import { ProductVariantsInput } from "./inputField/ProductVariantsInput";
 // import  {
 //   ProductIDInput,
 //   ProductNameInput,
@@ -64,13 +71,13 @@ export const ProductDetails: Component = () => {
             <ProductTemplateInput />
             <ProductStatusInput />
             <ProductVendorInput />
-            {/* <ProductAvailableLocationsInput />
+            <ProductAvailableLocationsInput />
             <ProductDeepCategoryInput />
             <ProductGlobalMediaInput />
             <ProductTagsInput />
             <ProductCollectionsInput />
             <PhysicalProductFields />
-            <ProductVariantsInput /> */}
+            <ProductVariantsInput />
 
             <div class="flex flex-col sm:flex-row gap-3 pt-4">
               <button

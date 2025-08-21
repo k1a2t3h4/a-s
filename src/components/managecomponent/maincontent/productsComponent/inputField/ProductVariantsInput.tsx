@@ -466,8 +466,6 @@ export const ProductVariantsInput = () => {
     return /^https?:\/\/.+/i.test(url.trim());
   }
 
-  // --- Render (UI code remains as in your last edit) ---
-  // ... (UI code unchanged)
   return (
     <>
       <Card>    

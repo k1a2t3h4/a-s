@@ -1,36 +1,30 @@
-import React, { useState, useMemo } from 'react';
-import { useProductContext } from '@/contexts/ProductContext';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '@/components/ui/command';
-import { Badge } from '@/components/ui/badge';
-import { ChevronsUpDown, Check, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { getAvailableCountryNamesFromActiveMarketplace, getCountriesFromNames } from '@/lib/form-data';
+import { createSignal, createMemo } from "solid-js";
+import { useProductContext } from "../../../../contexts/ProductContext";
+import { getAvailableCountryNamesFromActiveMarketplace } from "../../../../lib/form-data";
 
 export const ProductAvailableLocationsInput = () => {
   const { productFormData, setProductFormData } = useProductContext();
-  const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = createSignal("");
 
   // Always return array of { name: string }
-  const availableCountries = useMemo<{ name: string }[]>(() => {
+  const availableCountries = createMemo<{ name: string }[]>(() => {
     const names = getAvailableCountryNamesFromActiveMarketplace();
     if (Array.isArray(names)) {
       return names.map((n: any) =>
-        typeof n === 'string' ? { name: n } : n
+        typeof n === "string" ? { name: n } : n
       );
     }
     return [];
-  }, []);
+  });
 
-  const filteredAvailableCountries = useMemo(() => {
-    if (!search) return availableCountries;
-    return availableCountries.filter((c) => c.name.toLowerCase().includes(search.toLowerCase()));
-  }, [search, availableCountries]);
+  const filteredAvailableCountries = createMemo(() => {
+    if (!search()) return availableCountries();
+    return availableCountries().filter((c) =>
+      c.name.toLowerCase().includes(search().toLowerCase())
+    );
+  });
 
-  const selectedLocations = productFormData.availableLocations || [];
+  const selectedLocations = () => productFormData().availableLocations || [];
 
   const handleLocationSelect = (location: { name: string }) => {
     setProductFormData((prev: any) => {
@@ -46,65 +40,55 @@ export const ProductAvailableLocationsInput = () => {
   };
 
   return (
-    <div className="space-y-3">
-      <Label>Available Location</Label>
-      <p className="text-sm text-gray-600">Select locations from active marketplaces where this product will be available:</p>
-      <Popover open={locationDropdownOpen} onOpenChange={setLocationDropdownOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={locationDropdownOpen}
-            className="w-full justify-between"
-          >
-            {selectedLocations.length === 0
-              ? "Select locations..."
-              : `${selectedLocations.length} location${selectedLocations.length > 1 ? 's' : ''} selected`}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-full p-0" align="start">
-          <Command>
-            <CommandInput placeholder="Search locations..." value={search} onValueChange={setSearch} />
-            <CommandList>
-              <CommandEmpty>No locations found.</CommandEmpty>
-              <CommandGroup>
-                {filteredAvailableCountries?.map((location) => (
-                  <CommandItem
-                    key={location.name}
-                    value={location.name}
-                    onSelect={() => handleLocationSelect(location)}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        selectedLocations.some(l => l.name === location.name) ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    {location.name}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
-      {selectedLocations.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {selectedLocations.map((location: { name: string }) => (
-            <Badge key={location.name} variant="secondary" className="flex items-center gap-1">
-              {location.name}
-              <X
-                className="h-3 w-3 cursor-pointer"
-                onClick={() => handleLocationSelect(location)}
+    <div class="space-y-3">
+      <label class="block text-sm font-medium">Available Location</label>
+      <p class="text-sm text-gray-600">
+        Select locations from active marketplaces where this product will be available:
+      </p>
+
+      <div class="border rounded-md p-2 space-y-2">
+        <input
+          type="text"
+          placeholder="Search locations..."
+          class="w-full border px-2 py-1 rounded-md"
+          value={search()}
+          onInput={(e) => setSearch(e.currentTarget.value)}
+        />
+        <div class="max-h-40 overflow-y-auto space-y-1">
+          {filteredAvailableCountries().length === 0 && (
+            <p class="text-gray-400 text-sm">No locations found.</p>
+          )}
+          {filteredAvailableCountries().map((location) => (
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={selectedLocations().some((l) => l.name === location.name)}
+                onChange={() => handleLocationSelect(location)}
               />
-            </Badge>
+              <span>{location.name}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {selectedLocations().length > 0 && (
+        <div class="flex flex-wrap gap-2">
+          {selectedLocations().map((location: { name: string }) => (
+            <span class="px-2 py-1 bg-gray-200 rounded-md flex items-center gap-1 text-sm">
+              {location.name}
+              <button
+                class="text-red-500"
+                onClick={() => handleLocationSelect(location)}
+              >
+                ✕
+              </button>
+            </span>
           ))}
         </div>
       )}
-      {selectedLocations.length === 0 && (
-        <p className="text-red-500 text-sm">Please select at least one location</p>
+      {selectedLocations().length === 0 && (
+        <p class="text-red-500 text-sm">Please select at least one location</p>
       )}
     </div>
   );
-}; 
+};
