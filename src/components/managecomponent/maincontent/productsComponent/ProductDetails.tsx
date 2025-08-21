@@ -3,6 +3,12 @@ import { type Component} from "solid-js";
 import { useProductContext } from "../../../contexts/ProductContext";
 import { ProductIDInput } from "./inputField/ProductIDInput";
 import { ProductNameInput } from "./inputField/ProductNameInput";
+import { ProductDescriptionInput } from "./inputField/ProductDescriptionInput";
+import { ProductPricingInput } from "./inputField/ProductPricingInput";
+import { ProductInventoryInput } from "./inputField/ProductInventoryInput";
+import { ProductTemplateInput } from "./inputField/ProductTemplateInput";
+import { ProductStatusInput } from "./inputField/ProductStatusInput";
+import { ProductVendorInput } from "./inputField/ProductVendorInput";
 // import  {
 //   ProductIDInput,
 //   ProductNameInput,
@@ -52,13 +58,13 @@ export const ProductDetails: Component = () => {
           <div class="space-y-4 sm:space-y-6">
             <ProductIDInput />
             <ProductNameInput />
-            {/* <ProductDescriptionInput />
+            <ProductDescriptionInput />
             <ProductPricingInput />
             <ProductInventoryInput />
             <ProductTemplateInput />
             <ProductStatusInput />
             <ProductVendorInput />
-            <ProductAvailableLocationsInput />
+            {/* <ProductAvailableLocationsInput />
             <ProductDeepCategoryInput />
             <ProductGlobalMediaInput />
             <ProductTagsInput />

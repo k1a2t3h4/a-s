@@ -1,27 +1,32 @@
-import { useProductContext } from '@/contexts/ProductContext';
-import { Label } from '@/components/ui/label';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { VendorDetailsList } from '@/lib/product-data';
+import { useProductContext } from '../../../../contexts/ProductContext';
+import { VendorDetailsList } from '../../../../lib/product-data';
+import { createMemo } from "solid-js";
 
 export const ProductVendorInput = () => {
   const { productFormData, setProductFormData } = useProductContext();
 
+  const vendorKeys = createMemo(() => Object.keys(VendorDetailsList));
+
   return (
     <div>
-      <Label>Vendor *</Label>
-      <Select
-        value={productFormData.vendor || ''}
-        onValueChange={value => setProductFormData(prev => ({ ...prev, vendor: value }))}
+      <label class="block text-sm font-medium mb-1">Vendor *</label>
+      <select
+        class="border rounded-md px-2 py-1 w-full"
+        value={productFormData().vendor || ""}
+        onInput={(e) =>
+          setProductFormData((prev: any) => ({
+            ...prev,
+            vendor: e.currentTarget.value
+          }))
+        }
       >
-        <SelectTrigger>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {Object.keys(VendorDetailsList).map((vendor) => (
-            <SelectItem key={vendor} value={vendor}>{vendor}</SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        <option value="" disabled>
+          Select a vendor
+        </option>
+        {vendorKeys().map((vendor) => (
+          <option value={vendor}>{vendor}</option>
+        ))}
+      </select>
     </div>
   );
-}; 
+};

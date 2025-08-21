@@ -1,26 +1,22 @@
-import { useProductContext } from '@/contexts/ProductContext';
-import { Label } from '@/components/ui/label';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { useProductContext } from '../../../../contexts/ProductContext';
 
 export const ProductStatusInput = () => {
   const { productFormData, setProductFormData } = useProductContext();
 
   return (
     <div>
-      <Label>Status</Label>
-      <Select
-        value={productFormData.status || 'active'}
-        onValueChange={value => setProductFormData(prev => ({ ...prev, status: value }))}
+      <label class="block text-sm font-medium mb-1">Status</label>
+      <select
+        class="border border-gray-300 rounded-md p-2 w-full"
+        value={productFormData().status || 'active'}
+        onInput={(e) =>
+          setProductFormData((prev) => ({ ...prev, status: e.currentTarget.value }))
+        }
       >
-        <SelectTrigger>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="active">Active</SelectItem>
-          <SelectItem value="inactive">Inactive</SelectItem>
-          <SelectItem value="draft">Draft</SelectItem>
-        </SelectContent>
-      </Select>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+        <option value="draft">Draft</option>
+      </select>
     </div>
   );
-}; 
+};

@@ -1,7 +1,6 @@
-import { useProductContext } from '@/contexts/ProductContext';
-import { Label } from '@/components/ui/label';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { templateOptions } from '@/lib/form-data';
+import { useProductContext } from '../../../../contexts/ProductContext';
+import { templateOptions } from '../../../../lib/form-data';
+import type { ProductFormData } from '../../../../contexts/ProductContext';
 
 export const ProductTemplateInput = () => {
   const { productFormData, setProductFormData } = useProductContext();
@@ -10,25 +9,27 @@ export const ProductTemplateInput = () => {
 
   return (
     <div>
-      <Label>Template *</Label>
-      <Select
-        value={productFormData.template || ''}
-        onValueChange={value => setProductFormData(prev => ({ ...prev, template: value }))}
+      <label class="block mb-1 font-medium">Template *</label>
+      <select
+        value={productFormData().template || ''}
+        onChange={(e) =>
+          setProductFormData((prev:ProductFormData) => ({ ...prev, template: e.target.value }))
+        }
+        class="w-full px-3 py-2 border border-gray-300 rounded-md"
       >
-        <SelectTrigger>
-          <SelectValue placeholder="Select a template" />
-        </SelectTrigger>
-        <SelectContent>
-          {templates.length > 0
-            ? templates.map((template: string) => (
-                <SelectItem key={template} value={template}>
-                  {template}
-                </SelectItem>
-              ))
-            : <div className="px-2 py-1 text-gray-400">No templates available</div>
-          }
-        </SelectContent>
-      </Select>
+        <option value="" disabled>
+          Select a template
+        </option>
+        {templates.length > 0 ? (
+          templates.map((template: string) => (
+            <option value={template}>
+              {template}
+            </option>
+          ))
+        ) : (
+          <option disabled>No templates available</option>
+        )}
+      </select>
     </div>
   );
 };

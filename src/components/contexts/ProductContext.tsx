@@ -49,7 +49,9 @@ interface ProductContextType {
   selectedProduct: () => string | null;
   setSelectedProduct: (id: string | null) => void;
   productFormData: () => ProductFormData;
-  setProductFormData: (data: ProductFormData) => void;
+  setProductFormData: (
+    data: ProductFormData | ((prev: ProductFormData) => ProductFormData)
+  ) => void;
   refProductFormData: () => ProductFormData;
   canSave: () => boolean;
   selectedTopic: () => string;
