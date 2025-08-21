@@ -1,5 +1,5 @@
 // src/contexts/ProductContext.tsx
-import { createContext, useContext, JSX, createSignal, createEffect } from "solid-js";
+import { createContext, useContext, type JSX, createSignal, createEffect } from "solid-js";
 import { addProduct, deleteProduct, getProduct, updateProduct } from "../lib/storage";
 import { useAppState } from "../lib/state";
 import { useAuth } from "./AuthContext";

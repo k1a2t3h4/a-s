@@ -1,23 +1,26 @@
 // src/components/products/ProductDetails.tsx
-import { type Component, Show } from "solid-js";
+import { type Component} from "solid-js";
 import { useProductContext } from "../../../contexts/ProductContext";
-import {
-  ProductIDInput,
-  ProductNameInput,
-  // ProductDescriptionInput,
-  // ProductTemplateInput,
-  // ProductStatusInput,
-  // ProductVendorInput,
-  // ProductAvailableLocationsInput,
-  // ProductDeepCategoryInput,
-  // ProductGlobalMediaInput,
-  // ProductTagsInput,
-  // ProductCollectionsInput,
-  // ProductVariantsInput,
-  // PhysicalProductFields,
-  // ProductPricingInput,
-  // ProductInventoryInput,
-} from "./inputField";
+import { ProductIDInput } from "./inputField/ProductIDInput";
+import { ProductNameInput } from "./inputField/ProductNameInput";
+// import  {
+//   ProductIDInput,
+//   ProductNameInput,
+//   ProductDescriptionInput,
+//   ProductTemplateInput,
+//   ProductStatusInput,
+//   ProductVendorInput,
+//   ProductAvailableLocationsInput,
+//   ProductDeepCategoryInput,
+//   ProductGlobalMediaInput,
+//   ProductTagsInput,
+//   ProductCollectionsInput,
+//   ProductVariantsInput,
+//   PhysicalProductFields,
+//   ProductPricingInput,
+//   ProductInventoryInput,
+// } from "./inputField";
+
 
 export const ProductDetails: Component = () => {
   const {
