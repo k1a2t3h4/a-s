@@ -1,9 +1,9 @@
 import { For } from "solid-js";
-import { useProductVariantContext } from "../../../../../../contexts/ProductVariantProvider";
+import { useProductContext } from "../../../../../../contexts/ProductContext";
 
 const VariantOptions = () => {
   const {
-    variantOptions,
+    productFormData,
     handleDragOver,
     handleDragStart,
     handleDrop,
@@ -15,11 +15,11 @@ const VariantOptions = () => {
     getVariantOptionValueError,
     variantNameNoValueErrorIds,
     showVariantValueErrors,
-  } = useProductVariantContext();
+  } = useProductContext();
 
   return (
     <div class="space-y-4">
-      <For each={variantOptions}>
+      <For each={productFormData().variantOptions}>
         {(variant, index) => (
           <div
             class="border rounded-lg p-4 bg-white"
@@ -30,22 +30,39 @@ const VariantOptions = () => {
           >
             {/* Header */}
             <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-2">
-                {/* Grip (just text replacement for icon) */}
-                <span class="cursor-move text-gray-400 select-none">⋮⋮</span>
-                <input
-                  type="text"
-                  value={variant.name}
-                  onInput={(e) => updateVariantName(variant.id, e.currentTarget.value)}
-                  placeholder="Variant name (e.g., Size, Color)"
-                  class={`w-48 border rounded px-2 py-1 ${
-                    getVariantNameError(variant.id, variant.name) ||
-                    variantNameNoValueErrorIds.includes(variant.id)
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  }`}
-                />
-              </div>
+            <div class="space-y-2">
+            <div class="flex gap-2">
+              <span class="cursor-move text-gray-400 select-none">⋮⋮</span>
+              <input
+                value={variant.name}
+                type="text"
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    updateVariantName(variant.id, e.currentTarget.value.trim());
+                    e.currentTarget.blur(); // optional: remove focus
+                  }
+                }}
+                class={`w-48 border rounded px-2 py-1 ${
+                  getVariantNameError(variant.id, variant.name) ||
+                  variantNameNoValueErrorIds.includes(variant.id)
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }`}
+              />
+              <button
+                type="button"
+                class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                onClick={(e) => {
+                  const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                  if (input.value.trim()) {
+                    updateVariantName(variant.id, input.value.trim());
+                  }
+                }}
+              >
+                update
+              </button>
+            </div>
+          </div>
 
               {/* Validation errors */}
               {getVariantNameError(variant.id, variant.name) && (

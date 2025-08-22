@@ -1,53 +1,82 @@
-// @ts-nocheck
-import React from 'react';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { Show } from "solid-js";
+import { useProductContext } from "../../../../../../../contexts/ProductContext";
 
 type Props = {
-  hasHSCode: boolean;
-  countryOfOrigin: string;
-  hsCode: string;
-  onChangeHasHSCode: (v: boolean) => void;
-  onChangeCountryOfOrigin: (v: string) => void;
-  onChangeHsCode: (v: string) => void;
+  index: number;
 };
 
-const HsSection: React.FC<Props> = ({ hasHSCode, countryOfOrigin, hsCode, onChangeHasHSCode, onChangeCountryOfOrigin, onChangeHsCode }) => {
+const HsSection = (props: Props) => {
+  const { productFormData, updateCombination } = useProductContext();
+
+  const combination = () => productFormData().variantCombinations![props.index];
+
   return (
-    <div className="mt-2">
-      <div className="flex items-center space-x-2 mb-2">
-        <Checkbox id="hasHSCode" checked={hasHSCode || false} onCheckedChange={(checked) => onChangeHasHSCode(!!checked)} />
-        <Label htmlFor="hasHSCode">This product has an HS code</Label>
+    <div class="mt-2">
+      {/* Checkbox */}
+      <div class="flex items-center space-x-2 mb-2">
+        <input
+          id={`hasHSCode-${props.index}`}
+          type="checkbox"
+          checked={combination().hasHSCode || false}
+          onChange={(e) =>
+            updateCombination(
+              props.index,
+              "hasHSCode",
+              (e.currentTarget as HTMLInputElement).checked
+            )
+          }
+        />
+        <label for={`hasHSCode-${props.index}`}>This product has an HS code</label>
       </div>
-      {hasHSCode && (
-        <div className="grid grid-cols-2 gap-4">
+
+      {/* Show HS fields if checked */}
+      <Show when={combination().hasHSCode}>
+        <div class="grid grid-cols-2 gap-4">
+          {/* Country of origin */}
           <div>
-            <Label>Country/Region of origin</Label>
-            <Select value={countryOfOrigin || ''} onValueChange={(value) => onChangeCountryOfOrigin(value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="india">India</SelectItem>
-                <SelectItem value="usa">USA</SelectItem>
-                <SelectItem value="china">China</SelectItem>
-                <SelectItem value="uk">UK</SelectItem>
-              </SelectContent>
-            </Select>
+            <label>Country/Region of origin</label>
+            <select
+              class="border rounded px-2 py-1 w-full"
+              value={combination().countryOfOrigin || ""}
+              onChange={(e) =>
+                updateCombination(
+                  props.index,
+                  "countryOfOrigin",
+                  (e.currentTarget as HTMLSelectElement).value
+                )
+              }
+            >
+              <option value="">Select</option>
+              <option value="india">India</option>
+              <option value="usa">USA</option>
+              <option value="china">China</option>
+              <option value="uk">UK</option>
+            </select>
           </div>
+
+          {/* HS code */}
           <div>
-            <Label>Harmonized System (HS) code</Label>
-            <Input value={hsCode || ''} onChange={(e) => onChangeHsCode(e.target.value)} placeholder="Search by product keyword or code" />
-            <p className="text-sm text-blue-600 mt-1">Learn more about adding HS codes</p>
+            <label>Harmonized System (HS) code</label>
+            <input
+              class="border rounded px-2 py-1 w-full"
+              value={combination().hsCode || ""}
+              placeholder="Search by product keyword or code"
+              onInput={(e) =>
+                updateCombination(
+                  props.index,
+                  "hsCode",
+                  (e.currentTarget as HTMLInputElement).value
+                )
+              }
+            />
+            <p class="text-sm text-blue-600 mt-1">
+              Learn more about adding HS codes
+            </p>
           </div>
         </div>
-      )}
+      </Show>
     </div>
   );
 };
 
 export default HsSection;
-
-

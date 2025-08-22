@@ -1,104 +1,259 @@
-// @ts-nocheck
-import React from 'react';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+import { Show, For, createSignal } from "solid-js";
+import { useProductContext } from "../../../../../../../contexts/ProductContext";
 
 type Props = {
-  image: string;
-  varientmedia: { type: 'image'|'video'|'gif'; url: string }[];
-  mediaState: { currentMediaUrl?: string; currentMediaType?: 'image'|'video'|'gif' };
-  onChangeImage: (url: string) => void;
-  onMediaStateChange: (patch: Partial<{ currentMediaUrl?: string; currentMediaType?: 'image'|'video'|'gif' }>) => void;
-  dnd: { dragged: any; over: any; onDragStart: any; onDragOver: any; onDragEnd: any };
-  isUploading: boolean;
-  uploadError?: string;
-  onUploadFiles: (files: FileList) => void;
-  onAddMediaFromUrl: () => void;
+  index: number;
 };
 
-const MediaSection: React.FC<Props> = ({ image, varientmedia, mediaState, onChangeImage, onMediaStateChange, dnd, isUploading, uploadError, onUploadFiles, onAddMediaFromUrl }) => {
+const MediaSection = (props: Props) => {
+  const {
+    productFormData,
+    setProductFormData,
+    updateCombination,
+    addCombinationMedia,
+    handleCombinationMediaUpload,
+    isUploading,
+    uploadError,
+    draggedComboMedia,
+    dragOverComboMedia,
+    handleComboMediaDragStart,
+    handleComboMediaDragOver,
+    handleComboMediaDrop,
+    handleComboMediaDragEnd,
+    moveCombinationMedia,
+    removeCombinationMedia,
+  } = useProductContext();
+
+  const combination = () => productFormData().variantCombinations![props.index];
+
+  // Local input states
+  const [mediaUrl, setMediaUrl] = createSignal("");
+  const [mediaType, setMediaType] = createSignal<"image" | "video" | "gif">(
+    "image"
+  );
+
+  // Replace combinationMediaStates -> combination.varientmedia
+  const setCombinationMediaStates = (
+    url?: string,
+    type?: "image" | "video" | "gif"
+  ) => {
+    if (!url) return;
+
+    setProductFormData((prev) => {
+      const combos = [...prev.variantCombinations!];
+      const current = { ...combos[props.index] };
+
+      current.varientmedia = [
+        ...current.varientmedia,
+        { url, type: type || "image" },
+      ];
+
+      combos[props.index] = current;
+      return { ...prev, variantCombinations: combos };
+    });
+  };
+
+  const handleAddMedia = () => {
+    if (mediaUrl().trim()) {
+      setCombinationMediaStates(mediaUrl().trim(), mediaType());
+      setMediaUrl(""); // clear after add
+    }
+  };
+
   return (
-    <div className="space-y-3">
-      <Label>Add Media (Image, Video, GIF)</Label>
-      <div className="mb-2">
-        <Label>Main Image (for this variant)</Label>
-        <div className="flex items-center gap-2">
-          {image ? (
-            <img src={image} alt="main" className="w-12 h-12 object-cover rounded border" />
-          ) : (
-            <span className="w-12 h-12 flex items-center justify-center border rounded bg-gray-50 text-gray-400">No Image</span>
-          )}
-          <Input style={{ maxWidth: 220 }} value={image || ''} onChange={(e) => onChangeImage(e.target.value)} placeholder="Paste image URL" />
-          {image && (
-            <Button type="button" size="icon" variant="destructive" onClick={() => onChangeImage('')}>
-              <X className="h-4 w-4" />
-            </Button>
-          )}
+    <div class="space-y-3">
+      <label>Add Media (Image, Video, GIF)</label>
+
+      {/* Main image */}
+      <div class="mb-2">
+        <label>Main Image (for this variant)</label>
+        <div class="flex items-center gap-2">
+          <Show
+            when={combination().image}
+            fallback={
+              <span class="w-12 h-12 flex items-center justify-center border rounded bg-gray-50 text-gray-400">
+                No Image
+              </span>
+            }
+          >
+            <img
+              src={combination().image}
+              alt="main"
+              class="w-12 h-12 object-cover rounded border"
+            />
+          </Show>
+          <input
+            class="border rounded px-2 py-1"
+            style={{ "max-width": "220px" }}
+            value={combination().image || ""}
+            onInput={(e) =>
+              updateCombination(
+                props.index,
+                "image",
+                (e.target as HTMLInputElement).value
+              )
+            }
+            placeholder="Paste image URL"
+          />
+          <Show when={combination().image}>
+            <button
+              type="button"
+              class="px-2 py-1 rounded bg-red-500 text-white"
+              onClick={() => updateCombination(props.index, "image", "")}
+            >
+              ✕
+            </button>
+          </Show>
         </div>
       </div>
 
-      <div className="flex gap-2 mb-2">
-        <Input
-          value={mediaState?.currentMediaUrl || ''}
-          onChange={(e) => onMediaStateChange({ currentMediaUrl: e.target.value })}
-          onKeyPress={(e) => { if (e.key === 'Enter') onAddMediaFromUrl(); }}
+      {/* Media input row */}
+      <div class="flex gap-2 mb-2">
+        <input
+          class="border rounded px-2 py-1"
           placeholder="Enter media URL"
+          value={mediaUrl()}
+          onInput={(e) => setMediaUrl((e.target as HTMLInputElement).value)}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") handleAddMedia();
+          }}
         />
         <select
-          value={mediaState?.currentMediaType || 'image'}
-          onChange={(e) => onMediaStateChange({ currentMediaType: e.target.value as any })}
+          class="border rounded px-2 py-1"
+          value={mediaType()}
+          onInput={(e) =>
+            setMediaType((e.target as HTMLSelectElement).value as any)
+          }
         >
           <option value="image">Image</option>
           <option value="video">Video</option>
           <option value="gif">GIF</option>
         </select>
-        <Button type="button" size="sm" onClick={onAddMediaFromUrl}>Add</Button>
+        <button
+          type="button"
+          class="px-2 py-1 rounded bg-blue-500 text-white"
+          onClick={handleAddMedia}
+        >
+          Add
+        </button>
 
         <input
           type="file"
           multiple
           accept="image/*,video/*,.gif"
-          style={{ display: 'none' }}
-          id={`combo-media-upload`}
-          onChange={(e) => e.target.files && onUploadFiles(e.target.files)}
+          style={{ display: "none" }}
+          id={`combo-media-upload-${props.index}`}
+          onChange={(e) =>
+            e.currentTarget.files &&
+            handleCombinationMediaUpload(props.index, e.currentTarget.files)
+          }
         />
-        <label htmlFor={`combo-media-upload`}>
-          <Button type="button" size="sm" disabled={isUploading}>
-            {isUploading ? 'Uploading...' : 'Upload'}
-          </Button>
+        <label for={`combo-media-upload-${props.index}`}>
+          <button
+            type="button"
+            class="px-2 py-1 rounded bg-green-500 text-white"
+            disabled={isUploading}
+          >
+            {isUploading ? "Uploading..." : "Upload"}
+          </button>
         </label>
       </div>
-      {uploadError && (
-        <p className="text-red-500 text-sm mt-1">{uploadError}</p>
-      )}
-      <div className="flex flex-wrap gap-2">
-        {varientmedia.map((media, mediaIndex) => (
-          <div
-            key={mediaIndex}
-            className={`relative group flex flex-col items-center${dnd.dragged && dnd.dragged.index === mediaIndex ? ' opacity-50' : ''}${dnd.over && dnd.over.index === mediaIndex ? ' ring-2 ring-blue-400' : ''}`}
-            draggable
-            onDragStart={() => dnd.onDragStart(0, mediaIndex)}
-            onDragOver={(e) => { e.preventDefault(); dnd.onDragOver(0, mediaIndex); }}
-            onDragEnd={dnd.onDragEnd}
-            style={{ cursor: 'grab' }}
-          >
-            <div className="flex items-center gap-1">
-              <span className="cursor-grab text-gray-400">&#9776;</span>
-              {media.type === 'image' || media.type === 'gif' ? (
-                <img src={media.url} alt={media.type} className="w-12 h-12 object-cover rounded border" />
-              ) : (
-                <div className="w-12 h-12 bg-gray-200 rounded border flex items-center justify-center text-xs">Video</div>
-              )}
+
+      {/* Error */}
+      <Show when={uploadError}>
+        <p class="text-red-500 text-sm mt-1">{uploadError}</p>
+      </Show>
+
+      {/* Media preview list */}
+      <div class="flex flex-wrap gap-2">
+        <For each={combination().varientmedia}>
+          {(media, mediaIndex) => (
+            <div
+              class={`relative group flex flex-col items-center ${
+                draggedComboMedia &&
+                draggedComboMedia.combo === props.index &&
+                draggedComboMedia.index === mediaIndex()
+                  ? "opacity-50"
+                  : ""
+              } ${
+                dragOverComboMedia &&
+                dragOverComboMedia.combo === props.index &&
+                dragOverComboMedia.index === mediaIndex()
+                  ? "ring-2 ring-blue-400"
+                  : ""
+              }`}
+              draggable
+              onDragStart={() =>
+                handleComboMediaDragStart(props.index, mediaIndex())
+              }
+              onDragOver={(e) => {
+                e.preventDefault();
+                handleComboMediaDragOver(props.index, mediaIndex());
+              }}
+              onDrop={() => handleComboMediaDrop(props.index, mediaIndex())}
+              onDragEnd={handleComboMediaDragEnd}
+              style={{ cursor: "grab" }}
+            >
+              <div class="flex items-center gap-1">
+                <span class="cursor-grab text-gray-400">&#9776;</span>
+                <Show
+                  when={media.type === "image" || media.type === "gif"}
+                  fallback={
+                    <div class="w-12 h-12 bg-gray-200 rounded border flex items-center justify-center text-xs">
+                      Video
+                    </div>
+                  }
+                >
+                  <img
+                    src={media.url}
+                    alt={media.type}
+                    class="w-12 h-12 object-cover rounded border"
+                  />
+                </Show>
+              </div>
+              <div class="flex gap-1 mt-1">
+                <button
+                  type="button"
+                  class="px-2 py-1 border rounded"
+                  disabled={mediaIndex() === 0}
+                  onClick={() =>
+                    moveCombinationMedia(
+                      props.index,
+                      mediaIndex(),
+                      mediaIndex() - 1
+                    )
+                  }
+                >
+                  ←
+                </button>
+                <button
+                  type="button"
+                  class="px-2 py-1 border rounded"
+                  disabled={mediaIndex() === combination().varientmedia.length - 1}
+                  onClick={() =>
+                    moveCombinationMedia(
+                      props.index,
+                      mediaIndex(),
+                      mediaIndex() + 1
+                    )
+                  }
+                >
+                  →
+                </button>
+                <button
+                  type="button"
+                  class="px-2 py-1 rounded bg-red-500 text-white"
+                  onClick={() => removeCombinationMedia(props.index, mediaIndex())}
+                >
+                  ✕
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          )}
+        </For>
       </div>
     </div>
   );
 };
 
 export default MediaSection;
-
-

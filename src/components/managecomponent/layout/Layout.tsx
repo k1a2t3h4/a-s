@@ -1,5 +1,5 @@
 // src/components/layout/Layout.tsx
-import { type JSX, createSignal, onCleanup, onMount, createEffect, Show } from "solid-js";
+import { type JSX, createSignal, onCleanup, onMount, Show } from "solid-js";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 import { useAppState } from "../../lib/state";
@@ -15,9 +15,6 @@ export const Layout = (props: LayoutProps) => {
 
   const [isFullscreen, setIsFullscreen] = createSignal(false);
   const [isTransitioning, setIsTransitioning] = createSignal(false);
-
-  // Track both selected website ID and updatedAt timestamp
-  const websiteUpdateKey = () => (website ? `${website.id}-${website.updatedAt}` : null);
 
   // Handle fullscreen state
   onMount(() => {
@@ -49,10 +46,6 @@ export const Layout = (props: LayoutProps) => {
     setTimeout(() => setIsTransitioning(false), 300);
   };
 
-  // Debug website updates (like useEffect dependency on websiteUpdateKey)
-  createEffect(() => {
-    console.log("Website selection or content changed", websiteUpdateKey());
-  });
 
   return (
     <div class="min-h-screen bg-background text-foreground flex">

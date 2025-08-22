@@ -179,7 +179,7 @@ const Manage = () => {
       <style>{pageBuilderStyles}</style>
       {isInitialized() && (
         <Layout key={layoutKey()}>
-          <MainContent  />
+          <MainContent />
         </Layout>
       )}
     </>

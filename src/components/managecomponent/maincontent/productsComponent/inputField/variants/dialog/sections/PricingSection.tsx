@@ -1,57 +1,96 @@
-// @ts-nocheck
-import React from 'react';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+import { createMemo } from "solid-js";
+import { useProductContext } from "../../../../../../../contexts/ProductContext";
 
 type Props = {
-  price: string;
-  compareAtPrice: string;
-  costPerItem: string;
-  onChangePrice: (v: string) => void;
-  onChangeCompareAt: (v: string) => void;
-  onChangeCostPerItem: (v: string) => void;
+  index: number;
 };
 
-const PricingSection: React.FC<Props> = ({ price, compareAtPrice, costPerItem, onChangePrice, onChangeCompareAt, onChangeCostPerItem }) => {
-  const profit = (() => {
-    const p = parseFloat(price || '0');
-    const c = parseFloat(costPerItem || '0');
-    return p > 0 && c > 0 ? (p - c).toFixed(2) : '--';
-  })();
-  const margin = (() => {
-    const p = parseFloat(price || '0');
-    const c = parseFloat(costPerItem || '0');
+const PricingSection = (props: Props) => {
+  const { productFormData, updateCombination } = useProductContext();
+  const combination = productFormData().variantCombinations![props.index];
+
+  // Derived values
+  const profit = createMemo(() => {
+    const p = parseFloat(combination.price || "0");
+    const c = parseFloat(combination.costPerItem || "0");
+    return p > 0 && c > 0 ? (p - c).toFixed(2) : "--";
+  });
+
+  const margin = createMemo(() => {
+    const p = parseFloat(combination.price || "0");
+    const c = parseFloat(combination.costPerItem || "0");
     if (p > 0 && c > 0) {
       const pf = p - c;
-      return ((pf / p) * 100).toFixed(1) + '%';
+      return ((pf / p) * 100).toFixed(1) + "%";
     }
-    return '--';
-  })();
+    return "--";
+  });
 
   return (
     <div>
-      <div className="grid grid-cols-2 gap-4 mb-2">
+      {/* Price & Compare-at price */}
+      <div class="grid grid-cols-2 gap-4 mb-2">
         <div>
-          <Label>Price</Label>
-          <Input type="number" value={price || ''} onChange={(e) => onChangePrice(e.target.value)} placeholder="0.00" step="0.01" min="0" />
+          <label class="block text-sm font-medium mb-1">Price</label>
+          <input
+            type="number"
+            value={combination.price || ""}
+            onInput={(e) =>
+              updateCombination(props.index, "price", (e.target as HTMLInputElement).value)
+            }
+            placeholder="0.00"
+            step="0.01"
+            min="0"
+            class="border rounded px-2 py-1 w-full"
+          />
         </div>
         <div>
-          <Label>Compare-at price</Label>
-          <Input type="number" value={compareAtPrice || ''} onChange={(e) => onChangeCompareAt(e.target.value)} placeholder="0.00" step="0.01" min="0" />
+          <label class="block text-sm font-medium mb-1">Compare-at price</label>
+          <input
+            type="number"
+            value={combination.compareAtPrice || ""}
+            onInput={(e) =>
+              updateCombination(props.index, "compareAtPrice", (e.target as HTMLInputElement).value)
+            }
+            placeholder="0.00"
+            step="0.01"
+            min="0"
+            class="border rounded px-2 py-1 w-full"
+          />
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-4">
+
+      {/* Cost, Profit & Margin */}
+      <div class="grid grid-cols-3 gap-4">
         <div>
-          <Label>Cost per item</Label>
-          <Input type="number" value={costPerItem || ''} onChange={(e) => onChangeCostPerItem(e.target.value)} placeholder="0.00" step="0.01" min="0" />
+          <label class="block text-sm font-medium mb-1">Cost per item</label>
+          <input
+            type="number"
+            value={combination.costPerItem || ""}
+            onInput={(e) =>
+              updateCombination(props.index, "costPerItem", (e.target as HTMLInputElement).value)
+            }
+            placeholder="0.00"
+            step="0.01"
+            min="0"
+            class="border rounded px-2 py-1 w-full"
+          />
         </div>
         <div>
-          <Label>Profit</Label>
-          <Input value={profit} disabled className="bg-gray-100" />
+          <label class="block text-sm font-medium mb-1">Profit</label>
+          <input
+            value={profit()}
+            disabled
+            class="border rounded px-2 py-1 w-full bg-gray-100"
+          />
         </div>
         <div>
-          <Label>Margin</Label>
-          <Input value={margin} disabled className="bg-gray-100" />
+          <label class="block text-sm font-medium mb-1">Margin</label>
+          <input
+            value={margin()}
+            disabled
+            class="border rounded px-2 py-1 w-full bg-gray-100"
+          />
         </div>
       </div>
     </div>
@@ -59,5 +98,3 @@ const PricingSection: React.FC<Props> = ({ price, compareAtPrice, costPerItem, o
 };
 
 export default PricingSection;
-
-

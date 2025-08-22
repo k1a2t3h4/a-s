@@ -1,13 +1,13 @@
 import {  Show } from "solid-js";
-import { useProductVariantContext } from "../../../../../../../contexts/ProductVariantProvider";
+import { useProductContext } from "../../../../../../../contexts/ProductContext";
 
 type Props = {
   index: number;
 };
 
 const InventorySection = (props: Props) => {
-  const { variantCombinations, updateCombination } = useProductVariantContext();
-  const combination = variantCombinations[props.index];
+  const { productFormData, updateCombination } = useProductContext();
+  const combination = productFormData().variantCombinations![props.index];
 
   return (
     <div class="mb-4">

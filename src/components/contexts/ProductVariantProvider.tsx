@@ -74,7 +74,6 @@ const ProductVariantContext = createContext<ProductVariantContextType>();
 
 export const ProductVariantProvider = (props: { children: JSX.Element }) => {
   const { productFormData, setProductFormData } = useProductContext();
-
   // Signals
   const [variantOptions, setVariantOptions] = createSignal<any[]>(productFormData()?.variantOptions || []);
   const [variantCombinations, setVariantCombinations] = createSignal<any[]>(productFormData()?.variantCombinations || []);
