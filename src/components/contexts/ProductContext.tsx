@@ -493,23 +493,55 @@ const handleComboMediaDragEnd = () => {
   const updateVariantName = (id: string, name: string) => {
     const lowerName = name.trim().toLowerCase();
     if (!lowerName) return '';
+    
     const isDuplicate = productFormData().variantOptions?.some(
       variant => variant.id !== id && variant.name.trim().toLowerCase() === lowerName
     );
-    if(isDuplicate)
-    {
-      return
+    if (isDuplicate) {
+      return;
     }
-    const updated = productFormData().variantOptions?.map(variant =>
+  
+    const oldName = productFormData().variantOptions?.find(v => v.id === id)?.name;
+  
+    // ✅ update variantOptions
+    const updatedOptions = productFormData().variantOptions?.map(variant =>
       variant.id === id ? { ...variant, name } : variant
     );
-    generateSmartVariantCombinations(updated!, productFormData().variantCombinations??[]);
-    setProductFormData({ ...productFormData(), variantOptions: updated });
+  
+    // ✅ update variantCombinations (rename key if exists)
+    const updatedCombinations = (productFormData().variantCombinations || []).map(combo => {
+      if (!oldName || !(combo.combination && oldName in combo.combination)) {
+        return combo;
+      }
+  
+      const updatedCombination: Record<string, string> = {};
+  
+      for (const [key, value] of Object.entries(combo.combination)) {
+        if (key === oldName) {
+          updatedCombination[name] = value; // rename the key
+        } else {
+          updatedCombination[key] = value;  // keep other keys
+        }
+      }
+  
+      return {
+        ...combo,
+        combination: updatedCombination
+      };
+    });
+  
+    // ✅ set updated state
+    setProductFormData({
+      ...productFormData(),
+      variantOptions: updatedOptions,
+      variantCombinations: updatedCombinations
+    });
   
     if (name.trim().length > 0) {
       setVariantNameNoValueErrorIds(prev => prev.filter(eid => eid !== id));
     }
   };
+  
   
   const addVariantValue = (id: string, value: string) => {
     if (!value.trim()) return;
