@@ -20,8 +20,8 @@ const VariantCombinationsTable = () => {
     setNewImageUrl, 
     setImageUrlError,
     updateCombination,
-    expandedIndex,
-    setexpandedIndex
+    expandedIndices,
+    setExpandedIndices
   } = useProductContext();
 
   return (
@@ -50,7 +50,7 @@ const VariantCombinationsTable = () => {
                   class="cursor-pointer border-b hover:bg-gray-50"
                   onClick={(e) => {
                     if ((e.target as HTMLElement).tagName !== "INPUT") {
-                      setexpandedIndex((prev) =>
+                      setExpandedIndices((prev) =>
                         prev.includes(index())
                           ? prev.filter((i) => i !== index())
                           : [...prev, index()]
@@ -127,7 +127,7 @@ const VariantCombinationsTable = () => {
                 </tr>
 
                 {/* Dropdown Expanded Row */}
-                <Show when={expandedIndex.includes(index())}>
+                <Show when={expandedIndices().includes(index())}>
                   <tr class="bg-gray-50">
                     <td colspan="100%" class="p-4">
                       <div class="space-y-4">

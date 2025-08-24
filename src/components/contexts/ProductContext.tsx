@@ -124,8 +124,10 @@ interface ProductContextType {
   setIsUploading: (val: boolean) => void;
   uploadError: string;
   setUploadError: (val: string) => void;
-  expandedIndex: number[];
-  setexpandedIndex: (val: number[] | ((prev: number[]) => number[])) => void;
+  expandedIndices: () => number[];
+  setExpandedIndices: (
+    data: number[] | ((prev: number[]) => number[])
+  ) => void;
   imageUrlPopupIndex: number | null;
   setImageUrlPopupIndex: (val: number | null) => void;
   newImageUrl: string;
@@ -234,7 +236,7 @@ export const ProductProvider = (props: { children: JSX.Element }) => {
   const [dragOverComboMedia, setDragOverComboMedia] = createSignal<ComboMediaDrag | null>(null);
   const [isUploading, setIsUploading] = createSignal(false);
   const [uploadError, setUploadError] = createSignal("");
-  const [expandedIndex, setexpandedIndex] = createSignal<number[]>([]);
+  const [expandedIndices, setExpandedIndices] = createSignal<number[]>([]);
   const [imageUrlPopupIndex, setImageUrlPopupIndex] = createSignal<number | null>(null);
   const [newImageUrl, setNewImageUrl] = createSignal("");
   const [imageUrlError, setImageUrlError] = createSignal("");
@@ -591,18 +593,6 @@ const updateCombination = (index: number, field: string, value: any) => {
   });
   
   setProductFormData({ ...productFormData(), variantCombinations: updated });
-
-  if (field === 'sku') {
-    const newErrors = { ...skuErrors() };
-    if (!value.trim()) {
-      newErrors[index] = 'SKU is required';
-    } else if (!isSkuUnique(value, index)) {
-      newErrors[index] = 'SKU must be unique across all products';
-    } else {
-      delete newErrors[index];
-    }
-    setSkuErrors(newErrors);
-  }
 };
 
 // --- Validate Variants ---
@@ -784,8 +774,8 @@ const isValidImageUrl = (url: string) => /^https?:\/\/.+/i.test(url.trim());
         setIsUploading,
         uploadError: uploadError(),
         setUploadError,
-        expandedIndex:expandedIndex(),
-        setexpandedIndex,
+        expandedIndices,
+        setExpandedIndices,
         imageUrlPopupIndex: imageUrlPopupIndex(),
         setImageUrlPopupIndex,
         newImageUrl: newImageUrl(),
