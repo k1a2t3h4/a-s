@@ -485,7 +485,7 @@ const handleComboMediaDragEnd = () => {
   
     const newVariant = { id: Date.now().toString(), name: '', values: [] };
     const updatedOptions = [...productFormData().variantOptions??[], newVariant];
-    generateSmartVariantCombinations(updatedOptions!, productFormData().variantCombinations??[]);
+    
     setProductFormData({ ...productFormData(), variantOptions: updatedOptions });
     setTimeout(() => validateVariants(), 0);
   };
