@@ -624,7 +624,19 @@ const handleComboMediaDragEnd = () => {
   };
   const updateVariantValue = (variantId: string, oldValue: string, newValue: string) => {
     if (!newValue.trim()) return;
-  
+    const lowerName = newValue.trim().toLowerCase();
+    const isDuplicate = productFormData().variantOptions?.some(
+      variant => variant.name.trim().toLowerCase() === lowerName
+    );
+    if(isDuplicate)
+    {
+      return;
+    }
+
+    if(productFormData().variantOptions?.map(variant =>variant.id === variantId && variant.values.includes(newValue.trim())))
+    {
+      return
+    }
     // Update variant values
     const updatedVariants = productFormData().variantOptions?.map(v => {
       if (v.id === variantId) {
