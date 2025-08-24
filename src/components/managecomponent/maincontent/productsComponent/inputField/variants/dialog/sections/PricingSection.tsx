@@ -12,13 +12,13 @@ const PricingSection = (props: Props) => {
   // Derived values
   const profit = createMemo(() => {
     const p = parseFloat(combination.price || "0");
-    const c = parseFloat(combination.costPerItem || "0");
+    const c = parseFloat(combination.compareAtPrice || "0");
     return p > 0 && c > 0 ? (p - c).toFixed(2) : "--";
   });
 
   const margin = createMemo(() => {
     const p = parseFloat(combination.price || "0");
-    const c = parseFloat(combination.costPerItem || "0");
+    const c = parseFloat(combination.compareAtPrice || "0");
     if (p > 0 && c > 0) {
       const pf = p - c;
       return ((pf / p) * 100).toFixed(1) + "%";
@@ -66,7 +66,7 @@ const PricingSection = (props: Props) => {
           <label class="block text-sm font-medium mb-1">Cost per item</label>
           <input
             type="number"
-            value={combination.costPerItem || ""}
+            value={combination.compareAtPrice || ""}
             onInput={(e) =>
               updateCombination(props.index, "costPerItem", (e.target as HTMLInputElement).value)
             }

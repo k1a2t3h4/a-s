@@ -8,7 +8,6 @@ type Props = {
 const MediaSection = (props: Props) => {
   const {
     productFormData,
-    setProductFormData,
     updateCombination,
     addCombinationMedia,
     handleCombinationMediaUpload,
@@ -31,31 +30,9 @@ const MediaSection = (props: Props) => {
   const [mediaType, setMediaType] = createSignal<"image" | "video" | "gif">(
     "image"
   );
-
-  // Replace combinationMediaStates -> combination.varientmedia
-  const setCombinationMediaStates = (
-    url?: string,
-    type?: "image" | "video" | "gif"
-  ) => {
-    if (!url) return;
-
-    setProductFormData((prev) => {
-      const combos = [...prev.variantCombinations!];
-      const current = { ...combos[props.index] };
-
-      current.varientmedia = [
-        ...current.varientmedia,
-        { url, type: type || "image" },
-      ];
-
-      combos[props.index] = current;
-      return { ...prev, variantCombinations: combos };
-    });
-  };
-
   const handleAddMedia = () => {
     if (mediaUrl().trim()) {
-      setCombinationMediaStates(mediaUrl().trim(), mediaType());
+      addCombinationMedia(mediaUrl().trim(),props.index, mediaType());
       setMediaUrl(""); // clear after add
     }
   };
@@ -86,7 +63,7 @@ const MediaSection = (props: Props) => {
             class="border rounded px-2 py-1"
             style={{ "max-width": "220px" }}
             value={combination().image || ""}
-            onInput={(e) =>
+            onchange={(e) =>
               updateCombination(
                 props.index,
                 "image",
@@ -166,7 +143,7 @@ const MediaSection = (props: Props) => {
 
       {/* Media preview list */}
       <div class="flex flex-wrap gap-2">
-        <For each={combination().varientmedia}>
+        <For each={combination().variantmedia}>
           {(media, mediaIndex) => (
             <div
               class={`relative group flex flex-col items-center ${
@@ -229,7 +206,7 @@ const MediaSection = (props: Props) => {
                 <button
                   type="button"
                   class="px-2 py-1 border rounded"
-                  disabled={mediaIndex() === combination().varientmedia.length - 1}
+                  disabled={mediaIndex() === combination().variantmedia.length - 1}
                   onClick={() =>
                     moveCombinationMedia(
                       props.index,

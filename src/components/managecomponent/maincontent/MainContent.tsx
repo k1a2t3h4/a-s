@@ -62,8 +62,8 @@ export const MainContent = () => {
       //   return <EmailMarketing />;
       // case "plugins":
       //   return <Plugins />;
-    //   case "ThemeMarket":
-    //     return <ThemeManagement />;
+      // case "ThemeMarket":
+      //   return <ThemeManagement />;
       // case "settings":
       //   return <Settings />;
       default:

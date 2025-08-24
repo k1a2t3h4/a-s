@@ -7,12 +7,17 @@ import SkuSection from "../dialog/sections/SkuSection";
 import MediaSection from "../dialog/sections/MediaSection";
 import PhysicalSection from "../dialog/sections/PhysicalSection";
 import HsSection from "../dialog/sections/HsSection";
-
+import { ProductVariantDescriptionInput } from "../dialog/sections/ProductDescriptionInput";
+import { ProductVarientNameInput } from "../dialog/sections/ProductNameInput";
+import { ProductVarientIDInput } from "../dialog/sections/ProductIDInput";
+import { ProductVariantVendorInput } from "../dialog/sections/ProductVendorInput";
+import { ProductVariantStatusInput } from "../dialog/sections/ProductStatusInput";
+import { VariantProductAvailableLocationsInput } from "../dialog/sections/ProductAvailableLocationsInput";
 const VariantCombinationsTable = () => {
   const {
     productFormData,
     setImageUrlPopupIndex,
-    setNewImageUrl,
+    setNewImageUrl, 
     setImageUrlError,
     updateCombination,
   } = useProductContext();
@@ -34,8 +39,8 @@ const VariantCombinationsTable = () => {
         <For each={productFormData().variantCombinations}>
           {(combination, index) => {
             let imageUrl = combination.image;
-            if (!imageUrl && Array.isArray(combination.varientmedia)) {
-              const firstImg = combination.varientmedia.find((m: any) => m.type === "image");
+            if (!imageUrl && Array.isArray(combination.variantmedia)) {
+              const firstImg = combination.variantmedia.find((m: any) => m.type === "image");
               if (firstImg) imageUrl = firstImg.url;
             }
 
@@ -123,6 +128,12 @@ const VariantCombinationsTable = () => {
                   <tr class="bg-gray-50">
                     <td colspan="100%" class="p-4">
                       <div class="space-y-4">
+                        <ProductVarientIDInput index={index()}/>
+                        <ProductVarientNameInput index={index()}/>
+                        <ProductVariantDescriptionInput index={index()}/>
+                        <ProductVariantStatusInput index={index()}/>
+                        <VariantProductAvailableLocationsInput index={index()}/>
+                        <ProductVariantVendorInput index={index()}/>
                         <InventorySection index={index()} />
                         <PricingSection index={index()} />
                         <SkuSection index={index()} />

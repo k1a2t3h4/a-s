@@ -10,7 +10,6 @@ import {
 
 export const ProductDeepCategoryInput = () => {
   const { productFormData, setProductFormData } = useProductContext();
-
   const [showCustomDeepCategory, setShowCustomDeepCategory] = createSignal(false);
   const [customDeepCategory, setCustomDeepCategory] = createSignal("");
   const [categoryDropdownOpen, setCategoryDropdownOpen] = createSignal(false);

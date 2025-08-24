@@ -7,6 +7,52 @@ import { getAvailableCountryNamesFromActiveMarketplace } from "../lib/form-data"
 import { nanoid } from "nanoid";
 import { ProductVarientCombinationSKUQuantity, VendorDetailsList } from "../lib/product-data";
 import type { Accessor, Setter } from "solid-js";
+
+export interface Media {
+  type: 'image' | 'gif' | 'video';
+  url: string;
+}
+
+export interface VariantOption {
+  id:string;
+  name: string;
+  values: string[];
+}
+
+export interface VariantCombination {
+  combination: Record<string, string>;
+  variantId?: string;
+  variantName?: string;
+  variantDescription?: string;
+  variantavailableLocations?: { name: string }[];
+  status?: string;
+  meeshopageUrl?: string;
+  variantmedia: Media[];
+  price: string;
+  image:string;
+  shopLocation:string;
+  continueSellingOutOfStock:boolean;
+  hasSKUBarcode:boolean;
+  height:string;
+  breadth:string;
+  length:string;
+  dimensionUnit:string;
+  isPhysical:boolean;
+  weight:string;
+  weightUnit:string;
+  compareAtPrice: string;
+  sku: string;
+  barcode: string;
+  trackQuantity: boolean;
+  availableQuantity?: string;
+  vendor?: string;
+  hasHSCode: boolean;
+  countryOfOrigin: string;
+  hsCode: string;
+  varientmedia: [],   
+  costPerItem: string
+}
+
 // ---------- Types ----------
 export interface ProductFormData {
   ProductID?: string;
@@ -20,8 +66,8 @@ export interface ProductFormData {
   globalMedia?: { type: "image" | "video" | "gif"; url: string; name?: string }[];
   tags?: string[];
   collections?: string[];
-  variantOptions?: any[];
-  variantCombinations?: any[];
+  variantOptions?: VariantOption[];
+  variantCombinations?: VariantCombination[];
   isPhysical: boolean;
   weight: string;
   weightUnit: string;
@@ -87,7 +133,7 @@ interface ProductContextType {
   setNewImageUrl: (val: string) => void;
   imageUrlError: string;
   setImageUrlError: (val: string) => void;
-
+  VendorDetailsList:Record<number,string>;
   // 👉 All functions
   isSkuUnique: (sku: string, currentIndex?: number) => boolean;
   handleComboMediaDragStart: (combo: number, index: number) => void;
@@ -98,7 +144,8 @@ interface ProductContextType {
   removeCombinationMedia: (comboIndex: number, mediaIndex: number) => void;
   handleCombinationMediaUpload: (comboIndex: number, files: FileList) => void;
   validateMediaUrl: (url: string) => boolean;
-  addCombinationMedia: (comboIndex: number, mediaType: "image" | "video" | "gif") => void;
+  addCombinationMedia: (url:string,comboIndex: number, mediaType: "image" | "video" | "gif") => void;
+  handleLocationSelect: (comboIndex: number, location: { name: string }) => void;
   hasVariantOptionsChanged: (current: any[], previous: any[]) => boolean;
   getVariantNameError: (id: string, name: string) => string;
   getVariantOptionValueError: (variant: any) => string;
@@ -237,13 +284,13 @@ const handleComboMediaDragEnd = () => {
   
     if (!combinations[comboIndex]) return; // safety check
   
-    const media = [...(combinations[comboIndex].varientmedia ?? [])];
+    const media = [...(combinations[comboIndex].variantmedia ?? [])];
     const [removed] = media.splice(from, 1);
     media.splice(to, 0, removed);
   
     combinations[comboIndex] = {
       ...combinations[comboIndex],
-      varientmedia: media,
+      variantmedia: media,
     };
   
     setProductFormData({
@@ -257,8 +304,8 @@ const handleComboMediaDragEnd = () => {
   const removeCombinationMedia = (comboIndex: number, mediaIndex: number) => {
     
       const updated = [...(productFormData().variantCombinations ?? [])];
-      const media = updated[comboIndex].varientmedia.filter((_: any, i: number) => i !== mediaIndex);
-      updated[comboIndex] = { ...updated[comboIndex], varientmedia: media };
+      const media = updated[comboIndex].variantmedia.filter((_: any, i: number) => i !== mediaIndex);
+      updated[comboIndex] = { ...updated[comboIndex], variantmedia: media };
       setProductFormData({ ...productFormData(), variantCombinations: updated });
     
   };
@@ -277,8 +324,8 @@ const handleComboMediaDragEnd = () => {
       });
       
         const updated = [...(productFormData().variantCombinations ?? [])];
-        const currentMedia = updated[comboIndex].varientmedia || [];
-        updated[comboIndex] = { ...updated[comboIndex], varientmedia: [...currentMedia, ...newMedia] };
+        const currentMedia = updated[comboIndex].variantmedia || [];
+        updated[comboIndex] = { ...updated[comboIndex], variantmedia: [...currentMedia, ...newMedia] };
         setProductFormData({ ...productFormData(), variantCombinations: updated });
       
       
@@ -299,19 +346,36 @@ const handleComboMediaDragEnd = () => {
     }
   };
   
-  const addCombinationMedia = (comboIndex: number, mediaType: 'image' | 'video' | 'gif') => {
-    const states = productFormData().combinationMediaStates;
-    const currentUrl = states[comboIndex]?.currentMediaUrl?.trim();
-    if (!currentUrl) return;
-    if (!validateMediaUrl(currentUrl)) {
+  const addCombinationMedia = (url:string,comboIndex: number, mediaType: 'image' | 'video' | 'gif') => {
+    if (!url) return;
+    if (!validateMediaUrl(url)) {
       alert('Please enter a valid URL');
       return;
     }
       const updated = [...(productFormData().variantCombinations ?? [])];
-      const currentMedia = updated[comboIndex].varientmedia || [];
-      updated[comboIndex] = { ...updated[comboIndex], varientmedia: [...currentMedia, { type: mediaType, url: currentUrl }] };
+      const currentMedia = updated[comboIndex].variantmedia || [];
+      updated[comboIndex] = { ...updated[comboIndex], variantmedia: [...currentMedia, { type: mediaType, url: url }] };
       setProductFormData({ ...productFormData(), variantCombinations: updated });
   };
+  const handleLocationSelect = (comboIndex: number, location: { name: string } | null) => {
+    if (!location) return; // prevent nulls
+    const updated = [...(productFormData().variantCombinations ?? [])];
+    const current = updated[comboIndex].variantavailableLocations || [];
+  
+    // Toggle logic: add if not exists, remove if exists
+    const already = current.some(l => l.name === location.name);
+    const newLocations = already
+      ? current.filter(l => l.name !== location.name)
+      : [...current, location];
+  
+    updated[comboIndex] = { 
+      ...updated[comboIndex], 
+      variantavailableLocations: newLocations 
+    };
+  
+    setProductFormData({ ...productFormData(), variantCombinations: updated });
+  };
+  
   
   
   // --- Combination Generation ---
@@ -336,15 +400,14 @@ const handleComboMediaDragEnd = () => {
         } else {
           newCombinations.push({
             combination: { ...currentCombo },
-            varientId: generateNextProductId(),
+            variantId: generateNextProductId(),
             varientmedia: [],
+            variantavailableLocations:productFormData().availableLocations,
             image: '',
             enabled: true,
             price: '',
             compareAtPrice: '',
             costPerItem: '',
-            profit: '',
-            margin: '',
             trackQuantity: true,
             availableQuantity: '',
             shopLocation: '',
@@ -549,6 +612,11 @@ const validateVariants = (): boolean => {
   const options = productFormData().variantOptions??[];
   const combinations = productFormData().variantCombinations??[];
 
+  if(productFormData().ProductName!.length===0)
+  {
+    errors.push('productname required')
+  }
+
   if (options.length > 0) {
     const emptyValueOption = options.find(v => v.name.trim() !== '' && v.values.length === 0);
     if (emptyValueOption) {
@@ -592,6 +660,7 @@ const isValidImageUrl = (url: string) => /^https?:\/\/.+/i.test(url.trim());
     }
 
     if (selectedProduct() === null) {
+      console.log(selectedProduct())
       const newProductId = generateNextProductId();
       setProductFormData({ ...initproduct, ProductID: newProductId });
       setRefProductFormData({ ...initproduct, ProductID: newProductId });
@@ -734,6 +803,7 @@ const isValidImageUrl = (url: string) => /^https?:\/\/.+/i.test(url.trim());
         handleCombinationMediaUpload,
         validateMediaUrl,
         addCombinationMedia,
+        handleLocationSelect,
         hasVariantOptionsChanged,
         getVariantNameError,
         getVariantOptionValueError,
@@ -748,6 +818,7 @@ const isValidImageUrl = (url: string) => /^https?:\/\/.+/i.test(url.trim());
         updateCombination,
         validateVariants,
         isValidImageUrl,
+        VendorDetailsList
       }}
     >
       {props.children}

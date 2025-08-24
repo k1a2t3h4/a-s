@@ -1,9 +1,13 @@
-import { useProductContext } from '../../../../contexts/ProductContext';
+import { useProductContext } from '../../../../../../../contexts/ProductContext';
 import { createMemo } from "solid-js";
 
-export const ProductVendorInput = () => {
-  const { productFormData, setProductFormData ,VendorDetailsList} = useProductContext();
+type Props = {
+  index: number;
+};
 
+export const ProductVariantVendorInput = (props:Props) => {
+  const { productFormData, updateCombination ,VendorDetailsList} = useProductContext();
+  const combination = productFormData().variantCombinations![props.index];
   const vendorKeys = createMemo(() => Object.keys(VendorDetailsList));
 
   return (
@@ -11,12 +15,9 @@ export const ProductVendorInput = () => {
       <label class="block text-sm font-medium mb-1">Vendor *</label>
       <select
         class="border rounded-md px-2 py-1 w-full"
-        value={productFormData().vendor || ""}
+        value={combination.vendor || ""}
         onInput={(e) =>
-          setProductFormData((prev: any) => ({
-            ...prev,
-            vendor: e.currentTarget.value
-          }))
+          updateCombination(props.index, "vendor", (e.target as HTMLSelectElement).value)
         }
       >
         <option value="" disabled>
