@@ -491,8 +491,12 @@ const handleComboMediaDragEnd = () => {
   };
   
   const updateVariantName = (id: string, name: string) => {
+    if(productFormData().variantOptions?.map(variant =>
+      variant.name === name && variant.id !== id)){
+        return
+      }
     const updated = productFormData().variantOptions?.map(variant =>
-      variant.id === id  ? { ...variant, name } : variant
+      variant.id === id ? { ...variant, name } : variant
     );
     generateSmartVariantCombinations(updated!, productFormData().variantCombinations??[]);
     setProductFormData({ ...productFormData(), variantOptions: updated });
