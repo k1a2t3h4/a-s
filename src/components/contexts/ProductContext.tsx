@@ -155,6 +155,7 @@ interface ProductContextType {
   addVariantValue: (id: string, value: string) => void;
   removeVariantValue: (id: string, valueIndex: number) => void;
   removeVariantOption: (id: string) => void;
+  updateVariantValue : (variantId: string, oldValue: string, newValue: string) =>void;
   handleDragStart: (index: number) => void;
   handleDragOver: (e: DragEvent) => void;
   handleDrop: (e: DragEvent, dropIndex: number) => void;
@@ -621,6 +622,35 @@ const handleComboMediaDragEnd = () => {
   
     setTimeout(() => validateVariants(), 0);
   };
+  const updateVariantValue = (variantId: string, oldValue: string, newValue: string) => {
+    if (!newValue.trim()) return;
+  
+    // Update variant values
+    const updatedVariants = productFormData().variantOptions?.map(v => {
+      if (v.id === variantId) {
+        const newValues = v.values.map(val => (val === oldValue ? newValue : val));
+        return { ...v, values: newValues };
+      }
+      return v;
+    });
+  
+    // Update variantCombinations: rename oldValue key in each combination
+    const updatedCombinations = (productFormData().variantCombinations || []).map(combo => {
+      const newCombination: Record<string, string> = { ...combo.combination };
+      // Find the option that matches this variant
+      const variantName = productFormData().variantOptions?.find(v => v.id === variantId)?.name;
+      if (variantName && newCombination[variantName] === oldValue) {
+        newCombination[variantName] = newValue;
+      }
+      return { ...combo, combination: newCombination };
+    });
+  
+    setProductFormData({
+      ...productFormData(),
+      variantOptions: updatedVariants,
+      variantCombinations: updatedCombinations,
+    });
+  };
   
 
 const handleDragStart = (index: number) => {
@@ -878,6 +908,7 @@ const isValidImageUrl = (url: string) => /^https?:\/\/.+/i.test(url.trim());
         addVariantValue,
         removeVariantValue,
         removeVariantOption,
+        updateVariantValue,
         handleDragStart,
         handleDragOver,
         handleDrop,
