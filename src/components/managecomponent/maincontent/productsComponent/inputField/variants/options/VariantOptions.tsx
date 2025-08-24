@@ -64,12 +64,6 @@ const VariantOptions = () => {
             </div>
           </div>
 
-              {/* Validation errors */}
-              {getVariantNameError(variant.id, variant.name) && (
-                <p class="text-red-500 text-xs mt-1">
-                  {getVariantNameError(variant.id, variant.name)}
-                </p>
-              )}
               {variantNameNoValueErrorIds.includes(variant.id) &&
                 variant.name.trim().length === 0 && (
                   <p class="text-red-500 text-xs mt-1">
