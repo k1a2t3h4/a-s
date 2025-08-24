@@ -580,18 +580,48 @@ const handleComboMediaDragEnd = () => {
   };
   
   const removeVariantOption = (id: string) => {
-    const updated = productFormData().variantOptions?.filter(variant => variant.id !== id);
-    if(updated!.length===0)
-    {
-      setProductFormData({ ...productFormData(), variantOptions: [],variantCombinations:[] });
+    const optionToRemove = productFormData().variantOptions?.find(v => v.id === id);
+    if (!optionToRemove) return;
+  
+    const removedName = optionToRemove.name;
+  
+    // Update variantOptions
+    const updatedVariantOptions = productFormData().variantOptions?.filter(v => v.id !== id);
+    if (!updatedVariantOptions || updatedVariantOptions.length === 0) {
+      setProductFormData({ ...productFormData(), variantOptions: [], variantCombinations: [] });
+      return;
     }
-    else{
-    generateSmartVariantCombinations(updated!, productFormData().variantCombinations??[]);
-    setProductFormData({ ...productFormData(), variantOptions: updated });
+  
+    // Update variantCombinations
+    const updatedCombinationsMap: Record<string, any> = {};
+  
+    for (const combo of productFormData().variantCombinations || []) {
+      const combination = combo.combination || {};
+  
+      // Create new combination without removed key
+      const newCombination: Record<string, string> = {};
+      for (const [key, value] of Object.entries(combination)) {
+        if (key !== removedName) newCombination[key] = value;
+      }
+  
+      // Deduplicate by combination values of remaining keys
+      const keyString = JSON.stringify(newCombination);
+      if (!updatedCombinationsMap[keyString]) {
+        updatedCombinationsMap[keyString] = { ...combo, combination: newCombination };
+      }
     }
-    
+  
+    const updatedCombinations = Object.values(updatedCombinationsMap);
+  
+    setProductFormData({
+      ...productFormData(),
+      variantOptions: updatedVariantOptions,
+      variantCombinations: updatedCombinations,
+    });
+  
     setTimeout(() => validateVariants(), 0);
   };
+  
 
 const handleDragStart = (index: number) => {
   setDraggedVariant(index);
