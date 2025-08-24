@@ -86,9 +86,9 @@ const VariantCombinationsTable = () => {
                   <td class="px-2 py-1">
                     <div class="flex flex-wrap gap-1">
                       <For each={Object.entries(combination.combination) as [string, string][]}>
-                        {([key, value]) => (
+                        {([key,value]) => (
                           <span class="px-2 py-1 text-sm border rounded bg-gray-100">
-                            {key}: {value}
+                            {value}/
                           </span>
                         )}
                       </For>

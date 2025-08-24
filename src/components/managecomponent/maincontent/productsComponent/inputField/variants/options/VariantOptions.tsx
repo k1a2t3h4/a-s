@@ -100,6 +100,7 @@ const VariantOptions = () => {
                       e.currentTarget.value = "";
                     }
                   }}
+                  disabled={variant.name.length===0}
                 />
                 <button
                   type="button"
@@ -112,6 +113,7 @@ const VariantOptions = () => {
                       input.value = "";
                     }
                   }}
+                  disabled={variant.name.length===0}
                 >
                   Add
                 </button>
