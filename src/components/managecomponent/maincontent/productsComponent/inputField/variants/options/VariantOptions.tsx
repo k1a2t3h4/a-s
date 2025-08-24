@@ -23,53 +23,47 @@ const VariantOptions = () => {
       <For each={productFormData().variantOptions}>
         {(variant, index) => (
           <div
-            class="border rounded-lg p-4 bg-white"
-            draggable
-            onDragStart={() => handleDragStart(index())}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, index())}
-          >
-            {/* Header: Variant Name */}
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex gap-2 items-center">
-                <span class="cursor-move text-gray-400 select-none">⋮⋮</span>
-                <input
-                  value={variant.name}
-                  type="text"
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      updateVariantName(variant.id, e.currentTarget.value.trim());
-                      e.currentTarget.blur();
-                    }
-                  }}
-                  class={`w-48 border rounded px-2 py-1 ${
-                    getVariantNameError(variant.id, variant.name) ||
-                    variantNameNoValueErrorIds.includes(variant.id)
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  }`}
-                />
-                <button
-                  type="button"
-                  class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-                  onClick={() => {
-                    if (variant.name.trim()) {
-                      updateVariantName(variant.id, variant.name.trim());
-                    }
-                  }}
-                >
-                  Update
-                </button>
-              </div>
-
-              {/* Remove Option Button */}
-              <button
-                type="button"
-                class="px-2 py-1 border rounded text-sm hover:bg-gray-100"
-                onClick={() => removeVariantOption(variant.id)}
-              >
-                ✕
-              </button>
+          class="border rounded-lg p-4 bg-white"
+          draggable
+          onDragStart={() => handleDragStart(index())}
+          onDragOver={handleDragOver}
+          onDrop={(e) => handleDrop(e, index())}
+        >
+          {/* Header */}
+          <div class="flex items-center justify-between mb-3">
+          <div class="space-y-2">
+          <div class="flex gap-2">
+            <span class="cursor-move text-gray-400 select-none">⋮⋮</span>
+            <input
+              value={variant.name}
+              type="text"
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  updateVariantName(variant.id, e.currentTarget.value.trim());
+                  e.currentTarget.blur(); // optional: remove focus
+                }
+              }}
+              class={`w-48 border rounded px-2 py-1 ${
+                getVariantNameError(variant.id, variant.name) ||
+                variantNameNoValueErrorIds.includes(variant.id)
+                  ? "border-red-500"
+                  : "border-gray-300"
+              }`}
+            />
+            <button
+              type="button"
+              class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+              onClick={(e) => {
+                const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                if (input.value.trim()) {
+                  updateVariantName(variant.id, input.value.trim());
+                }
+              }}
+            >
+              update
+            </button>
+          </div>
+        </div>
             </div>
 
             {/* Option Errors */}
