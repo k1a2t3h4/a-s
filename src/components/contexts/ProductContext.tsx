@@ -550,7 +550,14 @@ const handleComboMediaDragEnd = () => {
       setVariantNameNoValueErrorIds(prev => prev.includes(id) ? prev : [...prev, id]);
       return;
     }
-  
+    const lowerName = value.trim().toLowerCase();
+    const isDuplicate = productFormData().variantOptions?.some(
+      variant => variant.name.trim().toLowerCase() === lowerName
+    );
+    if(isDuplicate)
+    {
+      return;
+    }
     const updated = productFormData().variantOptions?.map(variant =>
       variant.id === id && !variant.values.includes(value.trim())
         ? { ...variant, values: [...variant.values, value.trim()] }
