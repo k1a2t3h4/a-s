@@ -491,6 +491,15 @@ const handleComboMediaDragEnd = () => {
   };
   
   const updateVariantName = (id: string, name: string) => {
+    const lowerName = name.trim().toLowerCase();
+    if (!lowerName) return '';
+    const isDuplicate = productFormData().variantOptions?.some(
+      variant => variant.id !== id && variant.name.trim().toLowerCase() === lowerName
+    );
+    if(isDuplicate)
+    {
+      return
+    }
     const updated = productFormData().variantOptions?.map(variant =>
       variant.id === id ? { ...variant, name } : variant
     );
