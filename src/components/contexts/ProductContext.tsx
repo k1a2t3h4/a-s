@@ -6,7 +6,6 @@ import { useAuth } from "./AuthContext";
 import { getAvailableCountryNamesFromActiveMarketplace } from "../lib/form-data";
 import { nanoid } from "nanoid";
 import { ProductVarientCombinationSKUQuantity, VendorDetailsList } from "../lib/product-data";
-import type { Accessor, Setter } from "solid-js";
 
 export interface Media {
   type: 'image' | 'gif' | 'video';
@@ -125,8 +124,8 @@ interface ProductContextType {
   setIsUploading: (val: boolean) => void;
   uploadError: string;
   setUploadError: (val: string) => void;
-  editingComboIndex: Accessor<number | null>;
-  setEditingComboIndex: Setter<number|null>;
+  expandedIndex: number[];
+  setexpandedIndex: (val: number[] | ((prev: number[]) => number[])) => void;
   imageUrlPopupIndex: number | null;
   setImageUrlPopupIndex: (val: number | null) => void;
   newImageUrl: string;
@@ -235,7 +234,7 @@ export const ProductProvider = (props: { children: JSX.Element }) => {
   const [dragOverComboMedia, setDragOverComboMedia] = createSignal<ComboMediaDrag | null>(null);
   const [isUploading, setIsUploading] = createSignal(false);
   const [uploadError, setUploadError] = createSignal("");
-  const [editingComboIndex, setEditingComboIndex] = createSignal<number | null>(null);
+  const [expandedIndex, setexpandedIndex] = createSignal<number[]>([]);
   const [imageUrlPopupIndex, setImageUrlPopupIndex] = createSignal<number | null>(null);
   const [newImageUrl, setNewImageUrl] = createSignal("");
   const [imageUrlError, setImageUrlError] = createSignal("");
@@ -785,8 +784,8 @@ const isValidImageUrl = (url: string) => /^https?:\/\/.+/i.test(url.trim());
         setIsUploading,
         uploadError: uploadError(),
         setUploadError,
-        editingComboIndex,
-        setEditingComboIndex,
+        expandedIndex:expandedIndex(),
+        setexpandedIndex,
         imageUrlPopupIndex: imageUrlPopupIndex(),
         setImageUrlPopupIndex,
         newImageUrl: newImageUrl(),

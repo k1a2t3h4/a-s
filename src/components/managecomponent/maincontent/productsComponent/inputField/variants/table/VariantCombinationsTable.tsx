@@ -20,10 +20,9 @@ const VariantCombinationsTable = () => {
     setNewImageUrl, 
     setImageUrlError,
     updateCombination,
+    expandedIndex,
+    setexpandedIndex
   } = useProductContext();
-
-  // state for dropdown expansion
-  const [expandedIndex, setExpandedIndex] = createSignal<number | null>(null);
 
   return (
     <table class="min-w-full border-collapse">
@@ -51,7 +50,11 @@ const VariantCombinationsTable = () => {
                   class="cursor-pointer border-b hover:bg-gray-50"
                   onClick={(e) => {
                     if ((e.target as HTMLElement).tagName !== "INPUT") {
-                      setExpandedIndex(expandedIndex() === index() ? null : index());
+                      setexpandedIndex((prev) =>
+                        prev.includes(index())
+                          ? prev.filter((i) => i !== index())
+                          : [...prev, index()]
+                      );
                     }
                   }}
                 >
@@ -124,7 +127,7 @@ const VariantCombinationsTable = () => {
                 </tr>
 
                 {/* Dropdown Expanded Row */}
-                <Show when={expandedIndex() === index()}>
+                <Show when={expandedIndex.includes(index())}>
                   <tr class="bg-gray-50">
                     <td colspan="100%" class="p-4">
                       <div class="space-y-4">
