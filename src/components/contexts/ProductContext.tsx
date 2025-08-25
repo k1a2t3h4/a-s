@@ -602,9 +602,13 @@ const handleComboMediaDragEnd = () => {
         ? { ...variant, values: variant.values.filter((_: any, index: any) => index !== valueIndex) }
         : variant
     );
-    
+    const itslastoption= updated!.length===1;
     const current = updated?.find(v => v.id === id);
-    if (current && current.values.length > 0) {
+    if(itslastoption && current && current.values.length ===0)
+    {
+      setProductFormData({ ...productFormData(),variantCombinations:[] });
+    }
+    else if (current && current.values.length > 0) {
       generateSmartVariantCombinations(updated!, productFormData().variantCombinations ?? []);
     } else {
       const optionToRemove = productFormData().variantOptions?.find(v => v.id === id);
