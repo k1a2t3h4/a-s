@@ -160,7 +160,6 @@ interface ProductContextType {
   handleDragOver: (e: DragEvent) => void;
   handleDrop: (e: DragEvent, dropIndex: number) => void;
   updateCombination: (index: number, field: string, value: any) => void;
-  validateVariants: () => boolean;
   isValidImageUrl: (url: string) => boolean;
 }
 
@@ -488,7 +487,6 @@ const handleComboMediaDragEnd = () => {
     const updatedOptions = [...productFormData().variantOptions??[], newVariant];
     
     setProductFormData({ ...productFormData(), variantOptions: updatedOptions });
-    setTimeout(() => validateVariants(), 0);
   };
   
   const updateVariantName = (id: string, name: string) => {
@@ -645,7 +643,6 @@ const handleComboMediaDragEnd = () => {
       variantOptions: updatedVariantOptions,
     });
   
-    setTimeout(() => validateVariants(), 0);
   };
   const updateVariantValue = (variantId: string, oldValue: string, newValue: string) => {
     if (!newValue.trim()) return;
@@ -746,39 +743,7 @@ const updateCombination = (index: number, field: string, value: any) => {
 };
 
 // --- Validate Variants ---
-const validateVariants = (): boolean => {
-  const errors: string[] = [];
-  const options = productFormData().variantOptions??[];
-  const combinations = productFormData().variantCombinations??[];
 
-  if(productFormData().ProductName!.length===0)
-  {
-    errors.push('productname required')
-  }
-
-  if (options.length > 0) {
-    const emptyValueOption = options.find(v => v.name.trim() !== '' && v.values.length === 0);
-    if (emptyValueOption) {
-      errors.push(`Variant option "${emptyValueOption.name}" must have at least one value.`);
-    }
-
-    combinations.forEach((combo, i) => {
-      if (!combo.price || isNaN(Number(combo.price)) || Number(combo.price) < 0) {
-        errors.push(`Price is required and must be 0 or a positive number for combination #${i + 1}.`);
-      }
-      if (combo.trackQuantity) {
-        if (!combo.availableQuantity || isNaN(Number(combo.availableQuantity)) || Number(combo.availableQuantity) < 0) {
-          errors.push(`Available quantity is required and must be 0 or a positive number for combination #${i + 1} when track quantity is enabled.`);
-        }
-      }
-      if (typeof combo.trackQuantity !== 'boolean') {
-        errors.push(`Track quantity must be set for combination #${i + 1}.`);
-      }
-    });
-  }
-
-  return errors.length === 0;
-};
 
 
 
@@ -956,7 +921,6 @@ const isValidImageUrl = (url: string) => /^https?:\/\/.+/i.test(url.trim());
         handleDragOver,
         handleDrop,
         updateCombination,
-        validateVariants,
         isValidImageUrl,
         VendorDetailsList
       }}
