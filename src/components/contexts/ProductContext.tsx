@@ -495,13 +495,18 @@ const handleComboMediaDragEnd = () => {
     const lowerName = name.trim().toLowerCase();
     if (!lowerName) return '';
     
-    const isDuplicate = productFormData().variantOptions?.some(
+    const isDuplicatename = productFormData().variantOptions?.some(
       variant => variant.id !== id && variant.name.trim().toLowerCase() === lowerName
     );
-    if (isDuplicate) {
+    if (isDuplicatename) {
       return;
     }
-  
+    const isDuplicateValue = productFormData().variantOptions?.some(variant =>
+      variant.values.some(v => v.trim().toLowerCase() === lowerName)
+    );
+    if (isDuplicateValue) {
+      return; // duplicate variant value found
+    }
     const oldName = productFormData().variantOptions?.find(v => v.id === id)?.name;
   
     // ✅ update variantOptions
