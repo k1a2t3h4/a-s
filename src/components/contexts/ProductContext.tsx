@@ -570,13 +570,49 @@ const handleComboMediaDragEnd = () => {
     setVariantNameNoValueErrorIds(prev => prev.filter(eid => eid !== id));
   };
   
+  const removelast_option_value=(name:string)=>{
+    const updatedCombinationsMap: Record<string, any> = {};
+      
+        for (const combo of productFormData().variantCombinations || []) {
+          const combination = combo.combination || {};
+      
+          // Create new combination without removed key
+          const newCombination: Record<string, string> = {};
+          for (const [key, value] of Object.entries(combination)) {
+            if (key !== name) newCombination[key] = value;
+          }
+      
+          // Deduplicate by combination values of remaining keys
+          const keyString = JSON.stringify(newCombination);
+          if (!updatedCombinationsMap[keyString]) {
+            updatedCombinationsMap[keyString] = { ...combo, combination: newCombination };
+          }
+        }
+      
+        const updatedCombinations = Object.values(updatedCombinationsMap);
+        setProductFormData({
+          ...productFormData(),
+          variantCombinations: updatedCombinations,
+        });
+  }
+
   const removeVariantValue = (id: string, valueIndex: number) => {
     const updated = productFormData().variantOptions?.map(variant =>
       variant.id === id
-        ? { ...variant, values: variant.values.filter((_:any, index:any) => index !== valueIndex) }
+        ? { ...variant, values: variant.values.filter((_: any, index: any) => index !== valueIndex) }
         : variant
     );
-    generateSmartVariantCombinations(updated!, productFormData().variantCombinations??[]);
+    
+    const current = updated?.find(v => v.id === id);
+    if (current && current.values.length > 0) {
+      generateSmartVariantCombinations(updated!, productFormData().variantCombinations ?? []);
+    } else {
+      const optionToRemove = productFormData().variantOptions?.find(v => v.id === id);
+      if (optionToRemove) {
+        removelast_option_value(optionToRemove.name);
+      }
+    }
+    
     setProductFormData({ ...productFormData(), variantOptions: updated });
   };
   
@@ -592,38 +628,19 @@ const handleComboMediaDragEnd = () => {
       setProductFormData({ ...productFormData(), variantOptions: [], variantCombinations: [] });
       return;
     }
-  
+    removelast_option_value(removedName)
     // Update variantCombinations
-    const updatedCombinationsMap: Record<string, any> = {};
-  
-    for (const combo of productFormData().variantCombinations || []) {
-      const combination = combo.combination || {};
-  
-      // Create new combination without removed key
-      const newCombination: Record<string, string> = {};
-      for (const [key, value] of Object.entries(combination)) {
-        if (key !== removedName) newCombination[key] = value;
-      }
-  
-      // Deduplicate by combination values of remaining keys
-      const keyString = JSON.stringify(newCombination);
-      if (!updatedCombinationsMap[keyString]) {
-        updatedCombinationsMap[keyString] = { ...combo, combination: newCombination };
-      }
-    }
-  
-    const updatedCombinations = Object.values(updatedCombinationsMap);
-  
+    
     setProductFormData({
       ...productFormData(),
       variantOptions: updatedVariantOptions,
-      variantCombinations: updatedCombinations,
     });
   
     setTimeout(() => validateVariants(), 0);
   };
   const updateVariantValue = (variantId: string, oldValue: string, newValue: string) => {
     if (!newValue.trim()) return;
+  
     const lowerName = newValue.trim().toLowerCase();
     const isDuplicate = productFormData().variantOptions?.some(
       variant => variant.name.trim().toLowerCase() === lowerName
@@ -633,11 +650,16 @@ const handleComboMediaDragEnd = () => {
       return;
     }
 
-    if(productFormData().variantOptions?.map(variant =>variant.id === variantId && variant.values.includes(newValue.trim())))
-    {
-      return
+    const trimmedValue = newValue.trim();
+    if (!trimmedValue) return;
+  
+    const variant = productFormData().variantOptions?.find(v => v.id === variantId);
+    if (!variant) return;
+  
+    if (variant.values.includes(trimmedValue)) {
+      return; 
     }
-    // Update variant values
+
     const updatedVariants = productFormData().variantOptions?.map(v => {
       if (v.id === variantId) {
         const newValues = v.values.map(val => (val === oldValue ? newValue : val));

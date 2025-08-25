@@ -1,4 +1,4 @@
-import { For } from "solid-js";
+import { For, createSignal } from "solid-js";
 import { useProductContext } from "../../../../../../contexts/ProductContext";
 
 const VariantOptions = () => {
@@ -9,12 +9,13 @@ const VariantOptions = () => {
     handleDrop,
     updateVariantName,
     removeVariantOption,
-    addVariantValue,
     removeVariantValue,
+    updateVariantValue,
     getVariantNameError,
     getVariantOptionValueError,
     variantNameNoValueErrorIds,
     showVariantValueErrors,
+    addVariantValue,
   } = useProductContext();
 
   return (
@@ -22,13 +23,13 @@ const VariantOptions = () => {
       <For each={productFormData().variantOptions}>
         {(variant, index) => (
           <div
-            class="border rounded-lg p-4 bg-white"
-            draggable
-            onDragStart={() => handleDragStart(index())}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, index())}
-          >
-            {/* Header */}
+          class="border rounded-lg p-4 bg-white"
+          draggable
+          onDragStart={() => handleDragStart(index())}
+          onDragOver={handleDragOver}
+          onDrop={(e) => handleDrop(e, index())}
+        >
+            {/* Header: Variant Name */}
             <div class="flex items-center justify-between mb-3">
             <div class="space-y-2">
             <div class="flex gap-2">
@@ -37,11 +38,12 @@ const VariantOptions = () => {
                 value={variant.name}
                 type="text"
                 onKeyPress={(e) => {
-                  if (e.key === "Enter") {
+                  if (e.key === "Enter" ) {
                     updateVariantName(variant.id, e.currentTarget.value.trim());
                     e.currentTarget.blur(); // optional: remove focus
                   }
                 }}
+                required
                 class={`w-48 border rounded px-2 py-1 ${
                   getVariantNameError(variant.id, variant.name) ||
                   variantNameNoValueErrorIds.includes(variant.id)
@@ -54,7 +56,7 @@ const VariantOptions = () => {
                 class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
                 onClick={(e) => {
                   const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-                  if (input.value.trim()) {
+                  if (input.value.trim().length!==0) {
                     updateVariantName(variant.id, input.value.trim());
                   }
                 }}
@@ -63,19 +65,6 @@ const VariantOptions = () => {
               </button>
             </div>
           </div>
-
-              {variantNameNoValueErrorIds.includes(variant.id) &&
-                variant.name.trim().length === 0 && (
-                  <p class="text-red-500 text-xs mt-1">
-                    Please enter a name for this option before adding values.
-                  </p>
-                )}
-              {variantNameNoValueErrorIds.includes(variant.id) &&
-                variant.name.trim().length > 0 && (
-                  <p class="text-red-500 text-xs mt-1">
-                    {getVariantOptionValueError(variant)}
-                  </p>
-                )}
 
               {/* Remove Option Button */}
               <button
@@ -87,8 +76,23 @@ const VariantOptions = () => {
               </button>
             </div>
 
+            {/* Option Errors */}
+            {variantNameNoValueErrorIds.includes(variant.id) &&
+              variant.name.trim().length === 0 && (
+                <p class="text-red-500 text-xs mt-1">
+                  Please enter a name for this option before adding values.
+                </p>
+              )}
+            {variantNameNoValueErrorIds.includes(variant.id) &&
+              variant.name.trim().length > 0 && (
+                <p class="text-red-500 text-xs mt-1">
+                  {getVariantOptionValueError(variant)}
+                </p>
+              )}
+
             {/* Values Section */}
             <div class="space-y-2">
+              {/* Add New Value */}
               <div class="flex gap-2">
                 <input
                   type="text"
@@ -119,25 +123,61 @@ const VariantOptions = () => {
                 </button>
               </div>
 
-              {/* Render values as badges */}
+              {/* Render Values */}
               <div class="flex flex-wrap gap-2">
                 <For each={variant.values}>
-                  {(value, vIndex) => (
-                    <span class="px-2 py-1 text-sm bg-gray-100 border rounded flex items-center gap-1">
-                      {value}
-                      <span
-                        class="cursor-pointer text-gray-500 hover:text-red-600"
-                        onClick={() => removeVariantValue(variant.id, vIndex())}
-                      >
-                        ✕
+                  {(value, vIndex) => {
+                    const [isEditing, setIsEditing] = createSignal(false);
+                    const [editValue, setEditValue] = createSignal(value);
+
+                    return (
+                      <span class="px-2 py-1 text-sm bg-gray-100 border rounded flex items-center gap-1">
+                        {isEditing() ? (
+                          <input
+                            type="text"
+                            class="border px-1 py-0.5 rounded text-sm w-16"
+                            value={editValue()}
+                            onInput={(e) => setEditValue(e.currentTarget.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                updateVariantValue(
+                                  variant.id,
+                                  value,
+                                  editValue()
+                                );
+                                setIsEditing(false);
+                              } else if (e.key === "Escape") {
+                                setIsEditing(false);
+                                setEditValue(value);
+                              }
+                            }}
+                          />
+                        ) : (
+                          <>
+                            <span
+                              onClick={() => setIsEditing(true)}
+                              class="cursor-pointer"
+                            >
+                              {value}
+                            </span>
+                            <span
+                              class="cursor-pointer text-gray-500 hover:text-red-600"
+                              onClick={() =>
+                                removeVariantValue(variant.id, vIndex())
+                              }
+                            >
+                              ✕
+                            </span>
+                          </>
+                        )}
                       </span>
-                    </span>
-                  )}
+                    );
+                  }}
                 </For>
               </div>
             </div>
 
-            {/* Error for values */}
+            {/* Error for Values */}
             {getVariantOptionValueError(variant) && showVariantValueErrors && (
               <p class="text-red-500 text-xs mt-1">
                 {getVariantOptionValueError(variant)}
