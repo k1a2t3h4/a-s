@@ -2,7 +2,7 @@
 import { createContext, useContext, createSignal,createEffect, children } from "solid-js";
 import type { JSX } from "solid-js";
 import { nanoid } from "nanoid";
-import { useProductContext } from "./ProductContext";
+import { useProductContext } from "./FormDataContext";
 import { ProductVarientCombinationSKUQuantity, VendorDetailsList } from "../lib/product-data";
 
 type ComboMediaDrag = { combo: number; index: number };

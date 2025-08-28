@@ -5,7 +5,7 @@ import { useAppState } from "../../lib/state";
 // import { Analytics } from "../analytics/Analytics";
 // import { PageBuilder } from "../builder/PageBuilder";
 // import { PagesManager } from "../pages/PagesManager";
-import { Products } from "./productsComponent/Products";
+import { FormData } from "./FormDataComponent/FormData";
 // import { EmailMarketing } from "../email/EmailMarketing";
 // import { Settings } from "../settings/Settings";
 // import { Plugins } from "../plugins/Plugins";
@@ -57,7 +57,7 @@ export const MainContent = () => {
       // case "pages":
       //   return <PagesManager />;
       case "products":
-        return <Products />;
+        return <FormData />;
       // case "email":
       //   return <EmailMarketing />;
       // case "plugins":
@@ -67,7 +67,7 @@ export const MainContent = () => {
       // case "settings":
       //   return <Settings />;
       default:
-        return <Products />;
+        return <FormData />;
     }
   };
 

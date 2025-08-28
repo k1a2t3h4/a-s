@@ -4,120 +4,132 @@ import { initialAppState } from "./initial-data";
 export const APP_STATE_KEY = "dynascape_app_state";
 export const APP_DATA_KEY = "dynascape_app_data";
 
-const getUserProductsKey = (uniqueId: string) =>
-  `dynascape_products_${uniqueId}`;
+const getUserformsKey = (uniqueId: string) =>
+  `dynascape_forms_${uniqueId}`;
 
-// Products CRUD operations
-export const loadProducts = (uniqueId: string): Record<string, any> => {
+
+export const loadforms = (uniqueId: string): Record<string, any> => {
   try {
-    const key = getUserProductsKey(uniqueId);
+    const key = getUserformsKey(uniqueId);
     const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : {};
   } catch (err) {
-    console.error("Error loading products from localStorage", err);
+    console.error("Error loading forms from localStorage", err);
     return {};
   }
 };
 
-export const saveProducts = (
+export const saveform = (
   uniqueId: string,
-  products: Record<string, any>
+  forms: Record<string, any>
 ): void => {
   try {
-    const key = getUserProductsKey(uniqueId);
-    localStorage.setItem(key, JSON.stringify(products));
+    const key = getUserformsKey(uniqueId);
+    localStorage.setItem(key, JSON.stringify(forms));
   } catch (err) {
-    console.error("Error saving products to localStorage", err);
+    console.error("Error saving forms to localStorage", err);
   }
 };
 
-export const addProduct = (
+export const addform = (
   uniqueId: string,
   websiteId: string,
-  product: any
+  templateName: string,
+  form: any
 ): boolean => {
   try {
-    const products = loadProducts(uniqueId);
-    if (!products[websiteId]) {
-      products[websiteId] = [];
+    const forms = loadforms(uniqueId);
+
+    if (!forms[websiteId]) {
+      forms[websiteId] = {};
+    }
+    if (!forms[websiteId][templateName]) {
+      forms[websiteId][templateName] = [];
     }
 
     // prevent duplicate name
-    const exists = products[websiteId].some(
+    const exists = forms[websiteId][templateName].some(
       (pg: any) =>
-        pg.ProductName.toLowerCase() === product.ProductName.toLowerCase()
+        pg.formId === form.formId
     );
     if (exists) return false;
 
-    products[websiteId].push(product);
-    saveProducts(uniqueId, products);
+    forms[websiteId][templateName].push(form);
+    saveform(uniqueId, forms);
     return true;
   } catch (err) {
-    console.error("Error adding product", err);
+    console.error("Error adding form", err);
     return false;
   }
 };
 
-export const updateProduct = (
+
+export const updateform = (
   uniqueId: string,
   websiteId: string,
-  productId: string,
+  formId: string,
+  templateName: string,
   updatedData: any
 ): boolean => {
   try {
-    const products = loadProducts(uniqueId);
-    if (!products[websiteId]) return false;
+    const forms = loadforms(uniqueId);
+    if (!forms[websiteId] || !forms[websiteId][templateName]) return false;
 
-    const index = products[websiteId].findIndex(
-      (p: any) => p.ProductID === productId
+    const index = forms[websiteId][templateName].findIndex(
+      (p: any) => p.formId === formId
     );
     if (index === -1) return false;
 
-    products[websiteId][index] = {
-      ...products[websiteId][index],
+    forms[websiteId][templateName][index] = {
+      ...forms[websiteId][templateName][index],
       ...updatedData,
     };
-    saveProducts(uniqueId, products);
+    saveform(uniqueId, forms);
     return true;
   } catch (err) {
-    console.error("Error updating product", err);
+    console.error("Error updating form", err);
     return false;
   }
 };
 
-export const deleteProduct = (
+export const deleteform = (
   uniqueId: string,
   websiteId: string,
-  productId: string
+  template: string,
+  formId: string
 ): boolean => {
   try {
-    const products = loadProducts(uniqueId);
-    if (!products[websiteId]) return false;
+    const forms = loadforms(uniqueId);
+    if (!forms[websiteId] || !forms[websiteId][template]) return false;
 
-    products[websiteId] = products[websiteId].filter(
-      (p: any) => p.ProductID !== productId
+    forms[websiteId][template] = forms[websiteId][template].filter(
+      (p: any) => p.formId !== formId
     );
-    saveProducts(uniqueId, products);
+
+    saveform(uniqueId, forms);
     return true;
   } catch (err) {
-    console.error("Error deleting product", err);
+    console.error("Error deleting form", err);
     return false;
   }
 };
 
-export const getProduct = (
+export const getform = (
   uniqueId: string,
   websiteId: string,
-  productId: string
+  template: string,
+  formId: string
 ): any => {
   try {
-    const products = loadProducts(uniqueId);
-    if (!products[websiteId]) return null;
+    const forms = loadforms(uniqueId);
+    if (!forms[websiteId] || !forms[websiteId][template]) return null;
+
     return (
-      products[websiteId].find((p: any) => p.ProductID === productId) || null
+      forms[websiteId][template].find((p: any) => p.formId === formId) ||
+      null
     );
   } catch (err) {
-    console.error("Error getting product", err);
+    console.error("Error getting form", err);
     return null;
   }
 };
