@@ -7,13 +7,13 @@ import { FormTable } from "./forms/FormTable";
 import { Form } from "./forms/Form";
 
 export const FormDataDeliveryContent: Component = () => {
-  const { selectedForm, selectedContent } = useFormContext();
+  const { selectedFormId, selectedContent } = useFormContext();
 
   const [triggerAddFormData, setTriggerAddFormData] = createSignal(false);
 
   // Reset trigger when product changes
   createEffect(() => {
-    if (triggerAddFormData() && selectedForm()) {
+    if (triggerAddFormData() && selectedFormId()) {
       const timer = setTimeout(() => setTriggerAddFormData(false), 100);
       onCleanup(() => clearTimeout(timer));
     }

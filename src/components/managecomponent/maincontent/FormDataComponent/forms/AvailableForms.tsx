@@ -3,7 +3,7 @@ import { type Component, For } from "solid-js";
 import { useFormContext } from "../../../../contexts/FormDataContext";
 
 export const AvailableForms: Component = () => {
-  const { formTemplates, setSelectedContent, setSelectedTemplate } = useFormContext();
+  const { dynamicformTemplates, setSelectedContent, setSelectedTemplate } = useFormContext();
 
   const handleSelect = (templateName: string) => {
     setSelectedTemplate(templateName);
@@ -14,7 +14,7 @@ export const AvailableForms: Component = () => {
     <div class="p-4 space-y-4">
       <h2 class="text-lg font-semibold">📑 Available Dynamic Forms</h2>
       <ul class="space-y-2">
-        <For each={formTemplates.filter((t) => t.type === "dynamic")}>
+        <For each={dynamicformTemplates}>
           {(template) => (
             <li
               class="cursor-pointer rounded-md border p-3 hover:bg-gray-100"
@@ -26,6 +26,7 @@ export const AvailableForms: Component = () => {
           )}
         </For>
       </ul>
+      
     </div>
   );
 };

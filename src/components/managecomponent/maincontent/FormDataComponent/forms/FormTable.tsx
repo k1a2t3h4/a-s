@@ -52,12 +52,12 @@ export const FormTable: Component = () => {
                           class="cursor-pointer text-blue-600 hover:underline"
                           onClick={() => handleFormClick(form.formId)}
                         >
-                          {form.FormName || form.formId}
+                          {form.formId}
                         </span>
                         <button
                           class="rounded bg-red-500 px-2 py-1 text-white hover:bg-red-600"
                           onClick={() =>
-                            handleDeleteForm(form.formId, form.FormName)
+                            handleDeleteForm(form.formId)
                           }
                         >
                           Delete

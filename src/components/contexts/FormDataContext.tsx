@@ -12,14 +12,15 @@ export interface FormData {
 }
 
 interface ContextType {
-  selectedForm: () => string | null;
-  setSelectedForm: (id: string | null) => void;
+  selectedFormId: () => string | null;
+  setSelectedFormId: (id: string | null) => void;
   formdata: () => FormData | undefined;
   setFormData: (
     data: FormData | ((prev: FormData) => FormData)
   ) => void;
   canSave: () => boolean;
-  formTemplates: typeof formTemplates;
+  dynamicformTemplates: typeof dynamicformTemplates;
+  staticformTemplates: typeof staticformTemplates;
   selectedTemplate: () => string | null;
   setSelectedTemplate: (name: string | null) => void;
   formslist: () => FormData[];
@@ -30,15 +31,22 @@ interface ContextType {
   selectedContent: () => string;
   setSelectedContent: (view: string) => void;
   handleAddForm: () => void;
-  handleDeleteForm: (formId: string, formName: string) => void;
+  handleDeleteForm: (formId: string) => void;
   handleFormClick: (formId: string) => void;
   handleSave: () => void;
   handleDiscard: () => void;
   handleBack: () => void;
 }
 
+export const staticformTemplates = [
+  {
+    name: "contact details",
+    type: "static",
+  }
+]
+
 // ---------- Form Templates ----------
-export const formTemplates = [
+export const dynamicformTemplates = [
   {
     name: "productform",
     type: "dynamic",
@@ -46,10 +54,6 @@ export const formTemplates = [
   {
     name: "blog",
     type: "dynamic",
-  },
-  {
-    name: "contact details",
-    type: "static",
   }
 ];
 
@@ -69,7 +73,7 @@ export const FormProvider = (props: { children: JSX.Element }) => {
   const initForm: FormData = { formId: "" };
 
   // ---------- Signals ----------
-  const [selectedForm, setSelectedForm] = createSignal<string | null>(null);
+  const [selectedFormId, setSelectedFormId] = createSignal<string | null>(null);
   const [formdata, setFormData] = createSignal<FormData>(initForm);
   const [refformData, setRefformData] = createSignal<FormData>(initForm);
   const [canSave, setCanSave] = createSignal(false);
@@ -80,7 +84,7 @@ export const FormProvider = (props: { children: JSX.Element }) => {
   const generateNextformId = () => {
     return `P${nanoid()}`;
   };
-  
+
   createEffect(() => {
     if (!user()?.email || !selectedWebsiteId || !selectedTemplate()) {
       setFormsList([]);
@@ -98,22 +102,22 @@ export const FormProvider = (props: { children: JSX.Element }) => {
       setRefformData(initForm);
       return;
     }
-
-    if (selectedForm() === null) {
+    if (selectedFormId() === "" && selectedFormId()!==null) {
       const newformId = generateNextformId();
       setFormData({ ...initForm, formId: newformId });
       setRefformData({ ...initForm, formId: newformId });
-    } else {
+    } else if(selectedFormId() !== null) {
       const form = getform(
         user()?.email || "",
         selectedWebsiteId,
         selectedTemplate()!,
-        selectedForm()!
+        selectedFormId()!
       );
-
+      console.log(selectedFormId())
       if (form) {
         setFormData(form);
         setRefformData(form);
+        setSelectedContent("Form")
       } else {
         setFormData(initForm);
         setRefformData(initForm);
@@ -134,19 +138,20 @@ export const FormProvider = (props: { children: JSX.Element }) => {
       alert("Please select a template first.");
       return;
     }
+    console.log(selectedTemplate()+"in add")
     // reset formId and prepare empty data
-    setSelectedForm(null);
+    setSelectedFormId("");
   
     // move to Form view
     setSelectedContent("Form");
   };
   
 
-  const handleDeleteForm = (formId: string, formName: string) => {
+  const handleDeleteForm = (formId: string) => {
     if (!user()?.email || !selectedWebsiteId) return;
     if (
       window.confirm(
-        `Are you sure you want to delete "${formName}"? This action cannot be undone.`
+        `Are you sure you want to delete "${formId}"? This action cannot be undone.`
       )
     ) {
       const success = deleteform(
@@ -156,8 +161,8 @@ export const FormProvider = (props: { children: JSX.Element }) => {
         formId
       );
       if (success) {
-        if (selectedForm() === formId) {
-          setSelectedForm(null);
+        if (selectedFormId() === formId) {
+          setSelectedFormId(null);
         }
         // refresh list
         const forms = loadforms(user()?.email || "");
@@ -169,13 +174,14 @@ export const FormProvider = (props: { children: JSX.Element }) => {
   };
 
   const handleFormClick = (formId: string) => {
-    setSelectedForm(formId);
+    console.log(formId)
+    setSelectedFormId(formId);
   };
 
   const handleSave = () => {
     if (!user()?.email || !selectedWebsiteId || !selectedTemplate()) return;
     
-    if (selectedForm() === null) {
+    if (selectedFormId() === "") {
       const newform = {
         ...formdata()
       };
@@ -187,7 +193,7 @@ export const FormProvider = (props: { children: JSX.Element }) => {
         newform
       );
       if (success) {
-        setSelectedForm(newform.formId);
+        setSelectedFormId(newform.formId);
         setFormData(newform);
         setRefformData(newform);
         setCanSave(false);
@@ -198,7 +204,7 @@ export const FormProvider = (props: { children: JSX.Element }) => {
       const success = updateform(
         user()?.email || "",
         selectedWebsiteId,
-        selectedForm()!,
+        selectedFormId()!,
         selectedTemplate()!,
         formdata()
       );
@@ -231,7 +237,7 @@ const handleBack = () => {
   // Reset state
   setFormData(initForm);
   setCanSave(false);
-  setSelectedForm(null);
+  setSelectedFormId(null);
 
   // Navigation logic
   switch (selectedContent()) {
@@ -244,7 +250,7 @@ const handleBack = () => {
 
     case "Form":
       // If in Form, check template type
-      const template = formTemplates.find(
+      const template = dynamicformTemplates.find(
         (t) => t.name === selectedTemplate()
       );
 
@@ -271,8 +277,8 @@ const handleBack = () => {
   return (
     <FormContext.Provider
       value={{
-        selectedForm,
-        setSelectedForm,
+        selectedFormId,
+        setSelectedFormId,
         formdata,
         setFormData,
         canSave,
@@ -284,7 +290,8 @@ const handleBack = () => {
         handleSave,
         handleDiscard,
         handleBack,
-        formTemplates,
+        dynamicformTemplates,
+        staticformTemplates,
         selectedTemplate,
         setSelectedTemplate,
         selectedFormType,
