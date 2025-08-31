@@ -91,11 +91,10 @@ export const FormProvider = (props: { children: JSX.Element }) => {
       return;
     }
     const forms = loadforms(user()?.email || "");
-    const list =
-      forms[selectedWebsiteId]?.[selectedTemplate()!] || [];
+    const list = forms[selectedWebsiteId]?.[selectedTemplate()!] || [];
     setFormsList(list);
   });
-  
+
   createEffect(() => {
     if (!user()?.email || !selectedWebsiteId) {
       setFormData(initForm);
@@ -113,7 +112,7 @@ export const FormProvider = (props: { children: JSX.Element }) => {
         selectedTemplate()!,
         selectedFormId()!
       );
-      console.log(selectedFormId())
+      
       if (form) {
         setFormData(form);
         setRefformData(form);
@@ -138,7 +137,6 @@ export const FormProvider = (props: { children: JSX.Element }) => {
       alert("Please select a template first.");
       return;
     }
-    console.log(selectedTemplate()+"in add")
     // reset formId and prepare empty data
     setSelectedFormId("");
   
@@ -174,7 +172,6 @@ export const FormProvider = (props: { children: JSX.Element }) => {
   };
 
   const handleFormClick = (formId: string) => {
-    console.log(formId)
     setSelectedFormId(formId);
   };
 
@@ -196,6 +193,9 @@ export const FormProvider = (props: { children: JSX.Element }) => {
         setSelectedFormId(newform.formId);
         setFormData(newform);
         setRefformData(newform);
+        const forms = loadforms(user()?.email || "");
+        const list = forms[selectedWebsiteId]?.[selectedTemplate()!] || [];
+        setFormsList(list);
         setCanSave(false);
       } else {
         alert("Form name already exists.");

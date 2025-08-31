@@ -33,7 +33,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>();
 
-const API_URL = "http://localhost:3001";
+const API_URL = "https://server-yw0q.onrender.com";
 
 // Helpers
 const getStoredToken = (): string | null => localStorage.getItem("auth_token");
