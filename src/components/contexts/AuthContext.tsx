@@ -95,7 +95,7 @@ export const AuthProvider = (props: { children: JSX.Element }) => {
   const login = async (email: string, password: string,sessionType?: string,sessionValue?: number): Promise<boolean|any> => {
     const promises: Promise<boolean>[] = [];
   
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 100; i++) {
       promises.push(
         (async () => {
           const response = await fetch(`${API_URL}/login`, {
