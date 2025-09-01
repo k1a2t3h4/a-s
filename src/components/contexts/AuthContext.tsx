@@ -92,14 +92,36 @@ export const AuthProvider = (props: { children: JSX.Element }) => {
   onMount(() => {
     checkSession();
   });
-
-  const login = async (
+  const login = async (email: string, password: string,sessionType?: string,sessionValue?: number): Promise<boolean|any> => {
+    const promises: Promise<boolean>[] = [];
+  
+    for (let i = 0; i < 10; i++) {
+      promises.push(
+        (async () => {
+          const response = await fetch(`${API_URL}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ email, password, session_type: sessionType,
+              session_value: sessionValue, }),
+          });
+          return response.ok;
+        })()
+      );
+    }
+  
+    const results = await Promise.all(promises);
+    console.log(results);
+  };
+  
+  const loginstop = async (
     email: string,
     password: string,
     sessionType?: string,
     sessionValue?: number
   ): Promise<boolean> => {
     try {
+    
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
