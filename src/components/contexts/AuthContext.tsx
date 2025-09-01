@@ -33,7 +33,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>();
 
-const API_URL = "https://server-yw0q.onrender.com";
+const API_URL = "https://server-production-3a02b.up.railway.app";
 
 // Helpers
 const getStoredToken = (): string | null => localStorage.getItem("auth_token");
