@@ -95,7 +95,7 @@ export const AuthProvider = (props: { children: JSX.Element }) => {
   const login = async (email: string, password: string,sessionType?: string,sessionValue?: number): Promise<boolean|any> => {
     
   
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 500; i++) {
    
         (async () => {
           const response = await fetch(`${API_URL}/login`, {
@@ -106,9 +106,9 @@ export const AuthProvider = (props: { children: JSX.Element }) => {
               session_value: sessionValue, }),
           });
           if (response.ok) {
-            const data = await response.json();
-            if (data.token) storeToken(data.token);
-            setUser({ ...data.user });
+            // const data = await response.json();
+            // if (data.token) storeToken(data.token);
+            // setUser({ ...data.user });
             return true;
           }
           return false;
