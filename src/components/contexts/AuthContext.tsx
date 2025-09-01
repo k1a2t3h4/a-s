@@ -93,10 +93,10 @@ export const AuthProvider = (props: { children: JSX.Element }) => {
     checkSession();
   });
   const login = async (email: string, password: string,sessionType?: string,sessionValue?: number): Promise<boolean|any> => {
-    
+    const promises: Promise<boolean>[] = [];
   
-    for (let i = 0; i < 500; i++) {
-   
+    for (let i = 0; i < 100; i++) {
+      promises.push(
         (async () => {
           const response = await fetch(`${API_URL}/login`, {
             method: "POST",
@@ -105,19 +105,13 @@ export const AuthProvider = (props: { children: JSX.Element }) => {
             body: JSON.stringify({ email, password, session_type: sessionType,
               session_value: sessionValue, }),
           });
-          if (response.ok) {
-            // const data = await response.json();
-            // if (data.token) storeToken(data.token);
-            // setUser({ ...data.user });
-            return true;
-          }
-          return false;
+          return response.ok;
         })()
-      
+      );
     }
   
-
-    
+    const results = await Promise.all(promises);
+    console.log(results);
   };
   
   const loginstop = async (
